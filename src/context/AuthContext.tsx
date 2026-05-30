@@ -20,19 +20,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        // Check if user is admin
-        try {
-          // Default admin check
-          if (user.email === 'ekkhon2@gmail.com') {
-            setIsAdmin(true);
-          } else {
-            const adminDoc = await getDoc(doc(db, 'admins', user.uid));
-            setIsAdmin(adminDoc.exists());
-          }
-        } catch (error) {
-          console.error('Error checking admin status:', error);
-          setIsAdmin(false);
-        }
+        // Check if user is admin - strictly restricted to user's requested email: ekkhon2@gmail.com
+        const isUserAdmin = user.email && user.email.toLowerCase().trim() === 'ekkhon2@gmail.com';
+        setIsAdmin(!!isUserAdmin);
       } else {
         setIsAdmin(false);
       }

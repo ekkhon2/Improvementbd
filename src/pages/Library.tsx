@@ -77,7 +77,7 @@ export default function Library() {
             <img 
               src="https://i.ibb.co.com/v6jNcH6c/Improvement-Library.jpg" 
               alt="Improvement Library Logo" 
-              className="h-16 w-16 md:h-24 md:w-24 rounded-2xl md:rounded-3xl object-cover border-2 border-accent/30 shadow-2xl shadow-accent/20"
+              className="h-16 w-16 md:h-24 md:w-24 rounded-2xl md:rounded-3xl object-contain bg-white p-1.5 border-2 border-accent/30 shadow-2xl shadow-accent/20"
               referrerPolicy="no-referrer"
             />
           </div>

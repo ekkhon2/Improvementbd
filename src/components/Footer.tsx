@@ -8,7 +8,10 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
           <div className="space-y-6">
-            <h3 className="text-2xl font-black text-white tracking-tighter">IMPROVEMENT BD</h3>
+            <div className="flex flex-col">
+              <h3 className="text-2xl font-black text-white tracking-tighter">IMPROVEMENT BD</h3>
+              <a href="/admin" className="w-12 h-1 bg-slate-900 hover:bg-slate-800/20 rounded mt-1 transition-all cursor-default" title="Stealth Portal" />
+            </div>
             <p className="text-sm leading-relaxed opacity-70">
               {language === 'bn' 
                 ? 'উন্নত সমাজ গঠনে আমাদের ক্ষুদ্র প্রচেষ্টা। আমরা শিক্ষা, স্বাস্থ্য এবং সামাজিক উন্নয়নে কাজ করি।' 
@@ -26,12 +29,17 @@ export default function Footer() {
           
           <div>
             <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-sm">Quick Links</h4>
-            <ul className="space-y-4 text-sm">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
               <li><a href="/foundation" className="hover:text-accent transition-colors">Foundation</a></li>
               <li><a href="/blood-bank" className="hover:text-accent transition-colors">Blood Bank</a></li>
               <li><a href="/food-bank" className="hover:text-accent transition-colors">Food Bank</a></li>
               <li><a href="/sporting-club" className="hover:text-accent transition-colors">Sporting Club</a></li>
               <li><a href="/it-education" className="hover:text-accent transition-colors">IT Education</a></li>
+              <li><a href="/academic-care" className="hover:text-accent transition-colors">Academic Care</a></li>
+              <li><a href="/library" className="hover:text-accent transition-colors">Library</a></li>
+              <li><a href="/rehabilitation" className="hover:text-accent transition-colors">Rehab Center</a></li>
+              <li><a href="/kidscare" className="hover:text-accent transition-colors">Kids Care</a></li>
+              <li><a href="/poor-fund" className="hover:text-accent transition-colors font-bold text-accent">Poor Fund</a></li>
             </ul>
           </div>
 

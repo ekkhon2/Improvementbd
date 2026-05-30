@@ -25,12 +25,18 @@ export default function FoodAdmin() {
   });
 
   useEffect(() => {
-    const q = query(collection(db, 'food_donation_menu'), orderBy('createdAt', 'desc'));
+    const q = collection(db, 'food_donation_menu');
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const list = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as MenuItem[];
+      // Client-side sort fallback
+      list.sort((a, b) => {
+        const timeA = (a as any).createdAt?.seconds || 0;
+        const timeB = (b as any).createdAt?.seconds || 0;
+        return timeB - timeA;
+      });
       setMenuItems(list);
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, 'food_donation_menu');

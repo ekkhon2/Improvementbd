@@ -6,7 +6,6 @@ import {
   Menu, 
   X, 
   Globe, 
-  LayoutDashboard,
   Heart,
   Droplets,
   Utensils,
@@ -15,7 +14,8 @@ import {
   GraduationCap,
   Library,
   Home as HomeIcon,
-  Baby
+  Baby,
+  Wallet
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { buttonVariants } from '@/components/ui/button';
@@ -36,13 +36,14 @@ export default function Navbar() {
     { name: t('nav.library'), path: '/library', icon: Library },
     { name: t('nav.rehabilitation'), path: '/rehabilitation', icon: HomeIcon },
     { name: t('nav.kidscare'), path: '/kidscare', icon: Baby },
+    { name: t('nav.poorFund'), path: '/poor-fund', icon: Wallet },
   ];
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-black tracking-tighter text-gradient">Improvement BD</span>
+          <span className="text-2xl font-black tracking-tighter text-gradient">Improvement</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -69,17 +70,6 @@ export default function Navbar() {
             <span>{language === 'bn' ? 'EN' : 'BN'}</span>
           </Button>
 
-          <Link 
-            to="/admin"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "hidden sm:flex items-center gap-2"
-            )}
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            <span>{t('nav.admin')}</span>
-          </Link>
-
           {/* Mobile Nav */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger
@@ -102,17 +92,6 @@ export default function Navbar() {
                     <span>{item.name}</span>
                   </Link>
                 ))}
-                <Link 
-                  to="/admin" 
-                  onClick={() => setIsOpen(false)}
-                  className={cn(
-                    buttonVariants({ variant: "default" }),
-                    "w-full mt-4 flex items-center gap-2"
-                  )}
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  <span>{t('nav.admin')}</span>
-                </Link>
               </div>
             </SheetContent>
           </Sheet>

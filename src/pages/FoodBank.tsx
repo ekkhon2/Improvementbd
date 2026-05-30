@@ -64,12 +64,18 @@ export default function FoodBank() {
   }, []);
 
   useEffect(() => {
-    const q = query(collection(db, 'food_donation_menu'), orderBy('createdAt', 'desc'));
+    const q = collection(db, 'food_donation_menu');
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const list = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as MenuItem[];
+      // Client-side sort fallback
+      list.sort((a, b) => {
+        const timeA = (a as any).createdAt?.seconds || 0;
+        const timeB = (b as any).createdAt?.seconds || 0;
+        return timeB - timeA;
+      });
       setMenuItems(list);
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, 'food_donation_menu');
@@ -143,7 +149,7 @@ export default function FoodBank() {
             <img 
               src="https://i.ibb.co.com/zWwHgHV7/Improvement-Food-Bank.jpg" 
               alt="Improvement Food Bank Logo" 
-              className="h-20 w-20 md:h-32 md:w-32 rounded-3xl object-cover border-4 border-danger/30 shadow-2xl shadow-danger/20"
+              className="h-20 w-20 md:h-32 md:w-32 rounded-3xl object-contain bg-white p-2 border-4 border-danger/30 shadow-2xl shadow-danger/20"
               referrerPolicy="no-referrer"
             />
           </motion.div>

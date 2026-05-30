@@ -120,7 +120,7 @@ export default function SportingClub() {
                         <img 
                           src="https://i.ibb.co.com/qY81XHDH/Improvement-sporting-club.jpg" 
                           alt="Improvement Sporting Club Logo" 
-                          className="h-12 w-12 md:h-20 md:w-20 rounded-xl md:rounded-2xl object-cover border-2 border-accent/30 shadow-2xl shadow-accent/20"
+                          className="h-12 w-12 md:h-20 md:w-20 rounded-xl md:rounded-2xl object-contain bg-white p-1.5 border-2 border-accent/30 shadow-2xl shadow-accent/20"
                           referrerPolicy="no-referrer"
                         />
                       </div>
@@ -186,7 +186,7 @@ export default function SportingClub() {
                 <img 
                   src="https://i.ibb.co.com/qY81XHDH/Improvement-sporting-club.jpg" 
                   alt="Improvement Sporting Club Logo" 
-                  className="h-20 w-20 rounded-2xl object-cover border-2 border-accent/30 shadow-2xl shadow-accent/20"
+                  className="h-20 w-20 rounded-2xl object-contain bg-white p-1.5 border-2 border-accent/30 shadow-2xl shadow-accent/20"
                   referrerPolicy="no-referrer"
                 />
               </div>

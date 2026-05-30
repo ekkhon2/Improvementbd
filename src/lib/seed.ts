@@ -352,3 +352,39 @@ export async function seedCourses() {
     console.log('Demo courses seeded successfully.');
   }
 }
+
+export async function seedFoodMenu() {
+  const menuRef = collection(db, 'food_donation_menu');
+  const snapshot = await getDocs(menuRef);
+  
+  if (snapshot.empty) {
+    console.log('Seeding food donation menu...');
+    const demoItems = [
+      {
+        name: 'খিচুড়ি ও ডিম (Khichuri & Egg)',
+        perPersonCost: 45,
+        createdAt: serverTimestamp()
+      },
+      {
+        name: 'বিরিয়ানি ও মুরগি (Biryani & Chicken)',
+        perPersonCost: 85,
+        createdAt: serverTimestamp()
+      },
+      {
+        name: 'ভাত, ডাল ও মাছ (Rice, Dal & Fish)',
+        perPersonCost: 65,
+        createdAt: serverTimestamp()
+      },
+      {
+        name: 'ভাত, ডাল ও আলুভর্তা (Rice, Dal & Mashed Potato)',
+        perPersonCost: 35,
+        createdAt: serverTimestamp()
+      }
+    ];
+
+    for (const item of demoItems) {
+      await addDoc(menuRef, item);
+    }
+    console.log('Food donation menu seeded successfully.');
+  }
+}

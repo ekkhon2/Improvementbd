@@ -152,6 +152,7 @@ export default function GalleryAdmin() {
                       <SelectItem value="library">Library</SelectItem>
                       <SelectItem value="rehabilitation">Rehabilitation & Old Age Home</SelectItem>
                       <SelectItem value="kidscare">Kids Care</SelectItem>
+                      <SelectItem value="poor-fund">Poor Fund (দরিদ্র তহবিল)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

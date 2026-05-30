@@ -80,7 +80,7 @@ export default function BloodBank() {
             <img 
               src="https://i.ibb.co.com/C5NVj9mX/Improvement-Blood-Bank.jpg" 
               alt="Improvement Blood Bank Logo" 
-              className="h-16 w-16 md:h-24 md:w-24 rounded-2xl md:rounded-3xl object-cover border-2 border-danger/30 shadow-2xl shadow-danger/20"
+              className="h-16 w-16 md:h-24 md:w-24 rounded-2xl md:rounded-3xl object-contain bg-white p-1.5 border-2 border-danger/30 shadow-2xl shadow-danger/20"
               referrerPolicy="no-referrer"
             />
           </div>
@@ -111,12 +111,12 @@ export default function BloodBank() {
             </h2>
             <p className="text-white/80 leading-relaxed text-sm md:text-base font-medium whitespace-pre-line">
               {language === 'bn' 
-                ? `জাতি-ধর্ম-বর্ণ নির্বিশেষে সবার রক্তই লাল। এর মধ্যে কোন বিভেদ নেই। মানুষের শরীরে রক্তের প্রয়োজনীয়তা এত বেশি যে, রক্ত ছাড়া কেউ বাঁচতে পারে না। মুমূর্ষু রোগীকে বাঁচাতে প্রায়ই জরুরী রক্ত দেওয়ার প্রয়োজন হয়। যেমন- অতিরিক্ত রক্তক্ষরণ হলে, রক্তবমি বা পায়খানার সংগে রক্ত গেলে, দুর্ঘটনায় আহত রোগী, আস্ত্রোপচারের রোগী, সন্তান প্রসব কালে, ক্যান্সার বা অন্যান্য জটিল রোগ, এনিমিয়া, থ্যালাসেমিয়া, হিমোফিলিয়া, ডেঙ্গু হিমোরেজিক ফিভার ইত্যাদি রোগের কারণে রক্ত সঞ্চালনের প্রয়োজন পড়ে। এছাড়া বর্তমানে অঙ্গ প্রতিস্থাপন শুরু হয়েছে, যা সফল করতে প্রচুর রক্তের প্রয়োজন হয়।
+                ? `রক্তের কোনো বিকল্প নেই, এবং মানুষের শরীরের রক্তের প্রয়োজনীয়তা অপরিসীম। মুমূর্ষু রোগীকে বাঁচাতে প্রায়ই আমাদের অত্যন্ত দ্রুত রক্তদানের প্রয়োজন হয়। দুর্ঘটনা, অস্ত্রোপচার, প্রসবকালীন জটিলতা এবং বিভিন্ন রক্তের ব্যাধির ক্ষেত্রে শত শত মানুষের জীবন শুধুমাত্র সময়ে রক্ত পাওয়ার ওপর নির্ভর করে।
 
-১৮ থেকে ৬০ বছরের যে কোন সুস্থ্য ব্যক্তি যাদের শরীরের ওজন ৪৫ কেজির উপরে, তারা প্রতি চার মাস অন্তর অন্তর নিয়মিত রক্তদান করতে পারেন। একজন সুস্থ্য মানুষের শরীরে পাঁচ-ছয় লিটার রক্ত থাকে। এর মধ্যে সাধারণত ২৫০ থেকে ৪ ৪৫ মিলিলিটার রক্তদান করা হয়, যা শরীরে থাকা মোট রক্তের ১০ ভাগের ১ ভাগ। রক্তদান করার সাথে সাথে আমাদের শরীরের মধ্যে অবস্থিত ‘বোন ম্যারো’ নতুন কণিকা তৈরির জন্য উদ্দীপ্ত হয়। দান করার দু’সপ্তাহের মধ্যেই নতুন রক্ত কণিকা জন্ম হয়ে এই ঘাটতি পূরণ করে। আর প্রকৃতিক নিময়েই যেহেতু প্রতি ৪ মাস পর পর আমাদের শরীরের রেড সেল বদলায়, তাই বছরে ৩ বার রক্ত দিলে শরীরের কোন ক্ষতি হয় না বরং শরীরের লোহিত কণিকা গুলোর প্রাণ ব্যস্ততা আরো বেড়ে যায়।`
-                : `Regardless of race, religion or caste, everyone's blood is red. There is no difference in it. The need for blood in the human body is so great that no one can live without blood. Emergency blood is often needed to save a dying patient. For example - in case of excessive bleeding, blood in vomit or stool, injured patients in accidents, surgery patients, child birth, cancer or other complex diseases, anemia, thalassemia, hemophilia, dengue hemorrhagic fever, etc., blood transfusion is required. Besides, organ transplantation has started at present, which requires a lot of blood to be successful.
+১৮ থেকে ৬০ বছর বয়সী যেকোনো সুস্থ ব্যক্তি প্রতি চার মাস পরপর রক্তের কোনো ক্ষতি ছাড়াই নিরাপদে রক্তদান করতে পারেন। রক্তদান করলে আমাদের শরীরের নতুন কণিকা তৈরির প্রক্রিয়া আরও সক্রিয় হয়ে ওঠে। আপনার একটি ক্ষুদ্র পদক্ষেপ বাঁচাতে পারে কোনো একটি মূল্যবান জীবন।`
+                : `There is no true substitute for human blood, and its need in medical emergencies is immense. From physical trauma and critical surgeries to childbirth and treating blood disorders, millions of lives rely entirely on timely blood donations.
 
-Any healthy person between 18 and 60 years of age whose body weight is above 45 kg can donate blood regularly every four months. A healthy human body contains five to six liters of blood. Among them, usually 250 to 450 milliliters of blood is donated, which is 1/10th of the total blood in the body. As soon as blood is donated, the 'bone marrow' located in our body is stimulated to produce new cells. Within two weeks of donation, new blood cells are born and fill this gap. And since our body's red cells change every 4 months by natural rules, giving blood 3 times a year does not cause any harm to the body, rather the life activity of the red cells of the body increases more.`
+Any healthy individual between 18 and 60 years old can safely donate blood every four months. Doing so stimulates your bone marrow to produce fresh blood cells, which improves your own health. Your quick decision could save a precious life.`
               }
             </p>
           </div>

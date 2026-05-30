@@ -11,7 +11,9 @@ import {
   Image as ImageIcon,
   LogOut,
   Menu,
-  X
+  X,
+  Heart,
+  Compass
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loginWithGoogle, logout } from '@/src/lib/firebase';
@@ -28,6 +30,8 @@ import PlatformAdmin from './admin/PlatformAdmin';
 import SportsAdmin from './admin/SportsAdmin';
 import LibraryMembersAdmin from './admin/LibraryMembersAdmin';
 import FoodAdmin from './admin/FoodAdmin';
+import DonationsAdmin from './admin/DonationsAdmin';
+import MasterBlueprint from './admin/MasterBlueprint';
 
 export default function AdminLayout() {
   const { user, isAdmin, loading } = useAuth();
@@ -82,6 +86,7 @@ export default function AdminLayout() {
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
+    { name: 'Donations', icon: Heart, path: '/admin/donations' },
     { name: 'All Members', icon: Users, path: '/admin/members' },
     { name: 'Blood Bank', icon: Droplets, path: '/admin/blood' },
     { name: 'Library', icon: BookOpen, path: '/admin/library' },
@@ -91,6 +96,7 @@ export default function AdminLayout() {
     { name: 'Sports Banners', icon: ImageIcon, path: '/admin/sports-banners' },
     { name: 'Food Bank', icon: BookOpen, path: '/admin/food-bank' },
     { name: 'Gallery', icon: ImageIcon, path: '/admin/gallery' },
+    { name: 'Master Blueprint', icon: Compass, path: '/admin/blueprint' },
   ];
 
   const platforms = [
@@ -204,7 +210,9 @@ export default function AdminLayout() {
               <Route path="/sports-banners" element={<SportsAdmin />} />
               <Route path="/library/members" element={<LibraryMembersAdmin />} />
               <Route path="/food-bank" element={<FoodAdmin />} />
+              <Route path="/donations" element={<DonationsAdmin />} />
               <Route path="/platform/:platformId" element={<PlatformAdmin />} />
+              <Route path="/blueprint" element={<MasterBlueprint />} />
             </Routes>
         </main>
       </div>

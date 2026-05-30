@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '@/src/context/LanguageContext';
 import GallerySection from '@/src/components/GallerySection';
+import DonationModal from '@/src/components/DonationModal';
 import { Baby, Stars, Heart } from 'lucide-react';
 
 export default function KidsCare() {
@@ -23,6 +24,10 @@ export default function KidsCare() {
           <p className="text-lg md:text-xl opacity-80 max-w-2xl mx-auto leading-relaxed px-4 font-medium">
             শিশুদের সঠিক বিকাশ ও নিরাপদ আগামীর জন্য আমাদের এই উদ্যোগ।
           </p>
+          
+          <div className="mt-8 flex justify-center">
+            <DonationModal platform="kidscare" platformName="Kids Care" />
+          </div>
           
           <div className="max-w-4xl mx-auto mt-16 text-left bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/10 shadow-xl">
             <h2 className="text-xl font-black text-white mb-4 flex items-center gap-2">

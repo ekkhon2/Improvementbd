@@ -55,7 +55,7 @@ export default function TypingTest() {
 
   useEffect(() => {
     resetTest();
-  }, [testLang]);
+  }, [testLang, duration]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -102,6 +102,13 @@ export default function TypingTest() {
     const value = e.target.value;
     setUserInput(value);
     calculateStats(value);
+
+    // If typing reaches near the end of current paragraph, append a new random one
+    if (value.length >= paragraph.length - 20) {
+      const langParas = PARAGRAPHS[testLang];
+      const randomPara = langParas[Math.floor(Math.random() * langParas.length)];
+      setParagraph(prev => prev + " " + randomPara);
+    }
   };
 
   const calculateStats = (currentInput = userInput) => {
@@ -193,7 +200,7 @@ export default function TypingTest() {
             {!isActive && !isFinished ? (
               <div className="space-y-8 text-center py-12">
                 <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-                  {[60, 180, 300].map((s) => (
+                  {[60, 600, 1800].map((s) => (
                     <Button
                       key={s}
                       variant={duration === s ? 'default' : 'outline'}

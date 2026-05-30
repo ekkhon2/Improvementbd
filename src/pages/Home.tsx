@@ -79,6 +79,30 @@ const platforms = [
     desc: "Beautiful arrangement for borrowing and reading books",
     bnDesc: "বই ধার ও পড়ার সুন্দর ব্যবস্থা",
     logo: "https://i.ibb.co.com/v6jNcH6c/Improvement-Library.jpg"
+  },
+  {
+    name: "Improvement Rehabilitation",
+    bnName: "পুনর্বাসন কেন্দ্র",
+    slug: "rehabilitation",
+    desc: "Rehabilitation and old age home care services",
+    bnDesc: "বৃদ্ধাশ্রম এবং পুনর্বাসন সেবা কার্যক্রমসমূহ",
+    logo: "https://picsum.photos/seed/rehabilitation/300/300"
+  },
+  {
+    name: "Kids Care Center",
+    bnName: "কিডস কেয়ার",
+    slug: "kidscare",
+    desc: "Nursery and modern day care services",
+    bnDesc: "শিশুদের খেলাধুলা ও ডে-কেয়ার সেবা কার্যক্রম",
+    logo: "https://picsum.photos/seed/kidscare/300/300"
+  },
+  {
+    name: "Poor Fund",
+    bnName: "দরিদ্র তহবিল",
+    slug: "poor-fund",
+    desc: "Financial emergency and welfare assistance",
+    bnDesc: "অসহায় মানুষদের বিশেষ অনুদান তহবিল",
+    logo: "https://picsum.photos/seed/poorfund/300/300"
   }
 ];
 
@@ -316,46 +340,61 @@ export default function Home() {
         )}
 
         <div className="container mx-auto px-4 relative z-10 -mt-10 md:-mt-32 pb-12 md:pb-24">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+          <Swiper
+            modules={[Autoplay, Pagination, Navigation]}
+            spaceBetween={24}
+            slidesPerView={1}
+            autoplay={{ delay: 3500, disableOnInteraction: false }}
+            pagination={{ clickable: true }}
+            navigation
+            breakpoints={{
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+              1280: { slidesPerView: 4 }
+            }}
+            className="pb-14"
+          >
             {platforms.map((platform, index) => (
-              <motion.div
-                key={platform.slug}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 + (index * 0.1) }}
-              >
-                <Link to={`/${platform.slug}`}>
-                  <Card className="h-full bg-white border-border hover:border-accent/50 hover:shadow-2xl transition-all hover:-translate-y-2 group overflow-hidden rounded-[2rem]">
-                    <CardHeader className="flex flex-col items-center text-center p-8">
-                      <div className="w-28 h-28 rounded-3xl overflow-hidden mb-6 shadow-md group-hover:shadow-xl transition-all bg-slate-50 border border-slate-100 flex items-center justify-center">
-                        <img 
-                          src={platform.logo} 
-                          alt={platform.name} 
-                          className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-110"
-                          referrerPolicy="no-referrer"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${platform.slug}/300/300`;
-                          }}
-                        />
-                      </div>
-                      <CardTitle className="text-2xl font-bold text-primary group-hover:text-accent transition-colors mb-2">
-                        {language === 'bn' ? platform.bnName : platform.name}
-                      </CardTitle>
-                      <CardDescription className="mt-2 line-clamp-3 text-sm text-secondary leading-relaxed font-medium px-2">
-                        {language === 'bn' ? platform.bnDesc : platform.desc}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex justify-center pb-10">
-                      <div className="flex items-center gap-2 text-accent font-bold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
-                        <span>{t('common.details')}</span>
-                        <ArrowRight className="h-5 w-5" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
+              <SwiperSlide key={platform.slug}>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 * (index % 4) }}
+                  className="h-full py-4"
+                >
+                  <Link to={`/${platform.slug}`} className="block h-full">
+                    <Card className="h-[430px] bg-white border-border hover:border-accent/50 hover:shadow-2xl transition-all hover:-translate-y-2 group overflow-hidden rounded-[2rem] flex flex-col justify-between">
+                      <CardHeader className="flex flex-col items-center text-center p-6 pb-2">
+                        <div className="w-24 h-24 rounded-3xl overflow-hidden mb-6 shadow-md group-hover:shadow-xl transition-all bg-slate-50 border border-slate-100 flex items-center justify-center">
+                          <img 
+                            src={platform.logo} 
+                            alt={platform.name} 
+                            className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${platform.slug}/300/300`;
+                            }}
+                          />
+                        </div>
+                        <CardTitle className="text-xl font-bold text-primary group-hover:text-accent transition-colors line-clamp-1 mb-1">
+                          {language === 'bn' ? platform.bnName : platform.name}
+                        </CardTitle>
+                        <CardDescription className="mt-1 line-clamp-3 text-xs md:text-sm text-secondary leading-relaxed font-medium px-1">
+                          {language === 'bn' ? platform.bnDesc : platform.desc}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex justify-center pb-6">
+                        <div className="flex items-center gap-2 text-accent font-bold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 text-sm">
+                          <span>{t('common.details')}</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       </section>
 
