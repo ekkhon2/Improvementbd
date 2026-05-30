@@ -1,0 +1,243 @@
+{
+  "entities": {
+    "Member": {
+      "title": "Member",
+      "description": "General member for various platforms",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "phonePrimary": { "type": "string" },
+        "isWhatsApp": { "type": "boolean" },
+        "phoneSecondary": { "type": "string" },
+        "facebookURL": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "address": { "type": "string" },
+        "occupation": { "type": "string" },
+        "institution": { "type": "string" },
+        "interest": { "type": "string" },
+        "platform": { "type": "array", "items": { "type": "string", "enum": ["foundation", "blood-bank", "food-bank", "sporting-club", "it-education", "academic-care", "library"] } },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "membershipId": { "type": "string" },
+        "age": { "type": "string" },
+        "weight": { "type": "string" },
+        "preferredSport": { "type": "string" },
+        "skillLevel": { "type": "string" },
+        "availability": { "type": "string" },
+        "volunteerInterest": { "type": "string" },
+        "area": { "type": "string" },
+        "foundationArea": { "type": "string" },
+        "position": { "type": "string" },
+        "preferredCourse": { "type": "string" },
+        "classGrade": { "type": "string" },
+        "membershipType": { "type": "string" }
+      },
+      "required": ["fullName", "phonePrimary", "address", "platform"]
+    },
+    "Donor": {
+      "title": "Donor",
+      "description": "Blood donor information",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "bloodGroup": { "type": "string", "enum": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] },
+        "phonePrimary": { "type": "string" },
+        "isWhatsApp": { "type": "boolean" },
+        "phoneSecondary": { "type": "string" },
+        "facebookURL": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "address": { "type": "string" },
+        "lastDonatedDate": { "type": "string", "format": "date" },
+        "age": { "type": "string" },
+        "weight": { "type": "string" },
+        "status": { "type": "string", "enum": ["available", "unavailable"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "bloodGroup", "phonePrimary", "address"]
+    },
+    "Book": {
+      "title": "Book",
+      "description": "Library book inventory",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "image": { "type": "string" },
+        "code": { "type": "string" },
+        "status": { "type": "string", "enum": ["available", "borrowed"] },
+        "borrowerId": { "type": "string" },
+        "dueDate": { "type": "string", "format": "date" }
+      },
+      "required": ["title", "author", "category", "code"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "IT or Academic course",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "platform": { "type": "string", "enum": ["it-education", "academic-care"] },
+        "syllabus": { "type": "array", "items": { "type": "string" } },
+        "achievements": { "type": "array", "items": { "type": "string" } },
+        "duration": { "type": "string" },
+        "price": { "type": "string" },
+        "promoVideoUrl": { "type": "string" },
+        "demoPlaylistUrl": { "type": "string" }
+      },
+      "required": ["title", "category", "platform"]
+    },
+    "GalleryPost": {
+      "title": "Gallery Post",
+      "description": "Blog or gallery post",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "image": { "type": "string" },
+        "platform": { "type": "string" },
+        "isFeatured": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "platform"]
+    },
+    "Banner": {
+      "title": "Banner",
+      "description": "Homepage hero slider banners",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "image": { "type": "string" },
+        "link": { "type": "string" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["image", "order"]
+    },
+    "Stats": {
+      "title": "Stats",
+      "description": "Global statistics for the platform",
+      "type": "object",
+      "properties": {
+        "members": { "type": "number" },
+        "donors": { "type": "number" },
+        "books": { "type": "number" },
+        "recipients": { "type": "number" }
+      }
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Shop product",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "description": { "type": "string" },
+        "stock": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "price", "category", "image"]
+    },
+    "LendingRecord": {
+      "title": "Lending Record",
+      "description": "Library book lending record",
+      "type": "object",
+      "properties": {
+        "bookId": { "type": "string" },
+        "bookTitle": { "type": "string" },
+        "memberId": { "type": "string" },
+        "memberName": { "type": "string" },
+        "lendDate": { "type": "string", "format": "date-time" },
+        "dueDate": { "type": "string", "format": "date" },
+        "returnDate": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["borrowed", "returned"] }
+      },
+      "required": ["bookId", "memberId", "lendDate", "status"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Global application settings",
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string" }
+      }
+    },
+    "Exam": {
+      "title": "Exam",
+      "description": "Online MCQ exam",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "platform": { "type": "string", "enum": ["it-education", "academic-care"] },
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "duration": { "type": "number", "description": "Exam duration in minutes" },
+        "password": { "type": "string" },
+        "questions": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "question": { "type": "string" },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "correctAnswer": { "type": "number" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "platform", "startTime", "endTime", "password", "questions"]
+    },
+    "ExamSubmission": {
+      "title": "Exam Submission",
+      "description": "Student exam result",
+      "type": "object",
+      "properties": {
+        "examId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "class": { "type": "string" },
+        "batch": { "type": "string" },
+        "roll": { "type": "string" },
+        "score": { "type": "number" },
+        "totalQuestions": { "type": "number" },
+        "platform": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["examId", "studentName", "score", "timestamp"]
+    },
+    "FoodDonationMenu": {
+      "title": "Food Donation Menu",
+      "description": "Menu items for food bank special meal donations",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "perPersonCost": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "perPersonCost"]
+    }
+  },
+  "firestore": {
+    "/members/{memberId}": { "schema": "Member", "description": "Platform membership requests" },
+    "/donors/{donorId}": { "schema": "Donor", "description": "Blood donor database" },
+    "/books/{bookId}": { "schema": "Book", "description": "Library inventory" },
+    "/courses/{courseId}": { "schema": "Course", "description": "Educational courses" },
+    "/gallery/{postId}": { "schema": "GalleryPost", "description": "Gallery and blog posts" },
+    "/banners/{bannerId}": { "schema": "Banner", "description": "Homepage hero banners" },
+    "/admins/{adminId}": { "schema": { "type": "object", "properties": { "role": { "type": "string" }, "email": { "type": "string" } } }, "description": "Admin roles" },
+    "/stats/{statId}": { "schema": "Stats", "description": "Global statistics" },
+    "/products/{productId}": { "schema": "Product", "description": "Shop products" },
+    "/lending/{lendingId}": { "schema": "LendingRecord", "description": "Library lending history" },
+    "/settings/{settingId}": { "schema": "Settings", "description": "Global app settings" },
+    "/exams/{examId}": { "schema": "Exam", "description": "Exam definitions" },
+    "/exam_submissions/{submissionId}": { "schema": "ExamSubmission", "description": "Exam results" },
+    "/food_donation_menu/{menuId}": { "schema": "FoodDonationMenu", "description": "Food Bank donation menu items" }
+  }
+}

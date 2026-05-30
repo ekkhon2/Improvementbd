@@ -1,0 +1,134 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: members
+    // Fields: fullName (string), phonePrimary (string), address (string), platform (list), status (string)
+    // Security: Only admins can read full details. Public can NOT read.
+    //
+    // Collection: donors
+    // Fields: fullName (string), bloodGroup (string), phonePrimary (string), status (string)
+    // Security: Public can read for searching, but we MUST limit exposed fields if possible.
+    //
+    // Collection: stats
+    // Fields: members (int), donors (int), books (int), recipients (int)
+    // Security: ONLY admins or server-side increments should happen. Currently locking to Admin.
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "ekkhon2@gmail.com" && request.auth.token.email_verified == true || 
+         exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    // Validate string length to prevent DoS/Resource exhausted attacks
+    function isValidString(val, maxLen) {
+      return val is string && val.size() > 0 && val.size() <= maxLen;
+    }
+
+    // Validator for Member Application
+    function isValidMember(data) {
+      return data.fullName is string && data.fullName.size() <= 100 &&
+             data.phonePrimary is string && data.phonePrimary.size() <= 20 &&
+             data.platform is list &&
+             (!('status' in data) || data.status == 'pending'); // Users can't auto-approve themselves
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /members/{memberId} {
+      // Public can apply, but only with pending status and validated data
+      allow create: if isValidMember(request.resource.data) && 
+                      request.resource.data.status == 'pending';
+      
+      // CRITICAL: Prevent PII leak. Only admins can read member lists.
+      // If public needs to see "Our Members", a separate public_profiles collection should be used.
+      allow read: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    match /donors/{donorId} {
+      // Search is allowed for public, but we should be careful. 
+      // Strictly, if this contains phone numbers, it's a privacy risk if not authenticated.
+      // For now, keeping it readable but enforcing strict schema on create.
+      allow read: if true; 
+      allow create: if isValidString(request.resource.data.fullName, 100) &&
+                      isValidString(request.resource.data.bloodGroup, 5) &&
+                      isValidString(request.resource.data.phonePrimary, 20);
+      allow update, delete: if isAdmin();
+    }
+
+    match /books/{bookId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /gallery/{postId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /sports_banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+    
+    match /stats/{statId} {
+      allow read: if true;
+      // CRITICAL FIX: Only admins can update stats to prevent malicious corruption
+      allow write: if isAdmin(); 
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /exams/{examId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /food_donation_menu/{menuId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /exam_submissions/{submissionId} {
+      // Anyone can submit, but we must validate
+      allow create: if isValidString(request.resource.data.studentName, 100) &&
+                      isValidString(request.resource.data.examId, 50);
+      // Only admins can see all scores/submissions to protect student privacy
+      allow read: if isAdmin(); 
+      allow update, delete: if isAdmin();
+    }
+  }
+}
