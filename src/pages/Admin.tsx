@@ -13,10 +13,12 @@ import {
   Menu,
   X,
   Heart,
-  Compass
+  Compass,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { loginWithGoogle, logout } from '@/src/lib/firebase';
+import { loginWithGoogle, loginWithGoogleRedirect, logout } from '@/src/lib/firebase';
 
 import MembersAdmin from './admin/MembersAdmin';
 import BloodAdmin from './admin/BloodAdmin';
@@ -38,6 +40,33 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [signProgress, setSignProgress] = useState(false);
+
+  const handlePopupLogin = async () => {
+    try {
+      setAuthError(null);
+      setSignProgress(true);
+      await loginWithGoogle();
+    } catch (err: any) {
+      console.error("Google popup error: ", err);
+      setAuthError(err.message || String(err));
+    } finally {
+      setSignProgress(false);
+    }
+  };
+
+  const handleRedirectLogin = async () => {
+    try {
+      setAuthError(null);
+      setSignProgress(true);
+      await loginWithGoogleRedirect();
+    } catch (err: any) {
+      console.error("Google redirect error: ", err);
+      setAuthError(err.message || String(err));
+      setSignProgress(false);
+    }
+  };
 
   if (loading) return <div className="flex h-screen items-center justify-center bg-slate-50">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -45,20 +74,64 @@ export default function AdminLayout() {
 
   if (!user) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center space-y-6 bg-slate-50 p-4">
-        <div className="p-10 bg-white rounded-[2.5rem] shadow-2xl border border-slate-200 text-center max-w-md w-full relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
-          <div className="mb-8">
-            <div className="h-20 w-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-slate-100 shadow-sm">
-              <LayoutDashboard className="h-10 w-10 text-primary" />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4 font-sans">
+        <div className="p-8 bg-white rounded-[2.5rem] shadow-2xl border border-slate-200 text-center max-w-lg w-full relative overflow-hidden space-y-6">
+          <div className="absolute top-0 left-0 w-full h-2.5 bg-primary" />
+          
+          <div className="space-y-4">
+            <div className="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto border border-slate-100 shadow-sm">
+              <LayoutDashboard className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-black text-primary tracking-tight mb-2">Admin Portal</h1>
-            <p className="text-secondary font-medium">Authorized Personnel Only</p>
+            <h1 className="text-2xl md:text-3xl font-black text-primary tracking-tight">Admin Portal</h1>
+            <p className="text-sm text-secondary font-medium px-4">Authorized administrative personnel and system owners only</p>
           </div>
-          <Button onClick={loginWithGoogle} size="lg" className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.02]">
-            Login with Google
-          </Button>
-          <p className="mt-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Improvement BD Management System</p>
+
+          {authError && (
+            <div className="bg-red-50 text-red-700 text-xs font-bold p-4 rounded-2xl border border-red-100 text-left flex items-start gap-2.5">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-extrabold text-red-800">লগইন ত্রুটি (Login Error):</p>
+                <p className="font-medium opacity-90">{authError}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Dynamic Warning about Security Popups with a visual wrapper */}
+          <div className="bg-amber-55/80 border border-amber-200 text-amber-900 text-xs font-semibold p-4 rounded-2xl text-left space-y-2">
+            <div className="flex items-center gap-2 text-amber-800 font-extrabold text-xs">
+              <AlertCircle className="h-4 w-4" />
+              <span>আইফ্রেম ও পপ-আপ সতর্কতা (Iframe & Popup Warning)</span>
+            </div>
+            <p className="opacity-90 font-medium leading-relaxed">
+              ব্রাউজারের সিকিউরিটি পলিসির কারণে আইফ্রেমের (Web Preview) ভেতরে গুগল পপ-আপ ব্লক হতে পারে। যদি <strong>"Login with Google"</strong> বাটনে ক্লিক করার পর পপ-আপ না খোলে, তাহলে নিচের যেকোনো একটি পদ্ধতি অনুসরণ করুন:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-[11px] font-bold opacity-90">
+              <li>অফিসিয়াল প্রিভিউ স্ক্রিনের ডান কোণায় থাকা <strong className="text-primary">"Open in new tab"</strong> আইকনে ক্লিক করে নতুন উইন্ডোতে অ্যাপটি ওপেন করে লগইন করুন।</li>
+              <li>পপ-আপের পরিবর্তে নিচের <strong className="text-emerald-700">"Login using Redirect"</strong> বাটনটি ব্যবহার করুন।</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Button 
+              onClick={handlePopupLogin} 
+              disabled={signProgress}
+              size="lg" 
+              className="flex-1 h-14 bg-primary hover:bg-primary/95 text-white text-sm font-black rounded-2xl shadow-xl shadow-primary/10 transition-all active:scale-95 duration-200"
+            >
+              {signProgress ? 'Signing in...' : 'Login with Google'}
+            </Button>
+            <Button 
+              onClick={handleRedirectLogin} 
+              disabled={signProgress}
+              variant="outline"
+              size="lg" 
+              className="flex-1 h-14 border-2 border-emerald-600 hover:bg-emerald-50 text-emerald-700 text-sm font-black rounded-2xl transition-all"
+            >
+              Login using Redirect
+            </Button>
+          </div>
+
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-2">Improvement BD Management System</p>
         </div>
       </div>
     );
@@ -66,19 +139,44 @@ export default function AdminLayout() {
 
   if (!isAdmin) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center space-y-6 bg-slate-50 p-4">
-        <div className="p-10 bg-white rounded-[2.5rem] shadow-2xl border border-red-100 text-center max-w-md w-full relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-red-600" />
-          <div className="mb-8">
-            <div className="h-20 w-20 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-red-100 shadow-sm">
-              <X className="h-10 w-10 text-red-600" />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4 font-sans">
+        <div className="p-8 bg-white rounded-[2.5rem] shadow-2xl border border-red-100 text-center max-w-md w-full relative overflow-hidden space-y-6">
+          <div className="absolute top-0 left-0 w-full h-2.5 bg-red-600" />
+          
+          <div className="space-y-4">
+            <div className="h-16 w-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto border border-red-100 shadow-sm">
+              <X className="h-8 w-8 text-red-600" />
             </div>
-            <h1 className="text-3xl font-black text-red-600 tracking-tight mb-2">Access Denied</h1>
-            <p className="text-secondary font-medium px-4">You do not have administrative privileges. Please contact the system owner.</p>
+            <h1 className="text-2xl md:text-3xl font-black text-red-600 tracking-tight">Access Denied</h1>
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 text-xs space-y-1">
+              <span className="text-slate-400 font-bold uppercase tracking-wider block">Logged in as (আপনার ইমেইল):</span>
+              <span className="font-extrabold text-slate-800 break-all text-sm">{user.email}</span>
+            </div>
+            <p className="text-xs text-secondary font-medium leading-relaxed px-2">
+              আপনার ইমেইলটি এডমিন লিস্টে নিবন্ধিত নয়। শুধুমাত্র <strong>ekkhon2@gmail.com</strong> ইমেইলটি প্রধান এডমিন পোর্টালে এক্সেস পাবে।
+            </p>
           </div>
-          <Button onClick={() => navigate('/')} variant="outline" className="w-full h-14 text-lg font-black rounded-2xl border-2 transition-all hover:bg-slate-50">
-            Return to Homepage
-          </Button>
+
+          <div className="flex flex-col gap-3 pt-2">
+            <Button 
+              onClick={async () => {
+                await logout();
+                setAuthError(null);
+              }}
+              className="w-full h-14 bg-red-600 hover:bg-red-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-red-500/10 transition-all"
+            >
+              Logout & Switch Account
+            </Button>
+            <Button 
+              onClick={() => navigate('/')} 
+              variant="outline" 
+              className="w-full h-14 text-sm font-bold rounded-2xl border-2 transition-all hover:bg-slate-50"
+            >
+              Return to Homepage
+            </Button>
+          </div>
+
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-2">Improvement BD Security Service</p>
         </div>
       </div>
     );
