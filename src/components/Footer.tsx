@@ -55,10 +55,10 @@ export default function Footer() {
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-accent shrink-0" />
                 <div className="flex flex-col">
-                  <a href="https://wa.me/8801819417935" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">01819417935 (IT)</a>
-                  <a href="https://wa.me/8801518975474" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">01518975474 (Academic)</a>
-                  <a href="https://wa.me/8801640679394" target="_blank" rel="noreferrer" className="text-emerald-400 font-bold hover:text-emerald-300 transition-colors flex items-center gap-1 mt-1">
-                    01640679394 (Library WhatsApp)
+                  <a href="https://wa.me/8801625230727" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">01625230727 (Foundation - Hira)</a>
+                  <a href="https://wa.me/8801711157183" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">01711157183 (IT - Nadim)</a>
+                  <a href="https://wa.me/8801518975474" target="_blank" rel="noreferrer" className="text-emerald-400 font-bold hover:text-emerald-300 transition-colors flex items-center gap-1 mt-1">
+                    01518975474 (Academic & Library - Emam)
                   </a>
                 </div>
               </li>

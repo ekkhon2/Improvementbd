@@ -115,6 +115,23 @@ export default function DonationsAdmin() {
     return matchesPlatform && matchesStatus && matchesSearch;
   });
 
+  const STATUS_RANK: Record<string, number> = {
+    'approved': 1,
+    'pending': 2,
+    'rejected': 3
+  };
+
+  const sortedDonations = [...filteredDonations].sort((a, b) => {
+    const rankA = STATUS_RANK[a.status] || 99;
+    const rankB = STATUS_RANK[b.status] || 99;
+    if (rankA !== rankB) {
+      return rankA - rankB;
+    }
+    const timeA = a.createdAt?.seconds || 0;
+    const timeB = b.createdAt?.seconds || 0;
+    return timeB - timeA;
+  });
+
   const totalVerifiedFunds = donations
     .filter(d => d.status === 'approved')
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
@@ -170,16 +187,21 @@ export default function DonationsAdmin() {
           
           <div className="flex flex-wrap gap-3">
             <Select value={filterPlatform} onValueChange={setFilterPlatform}>
-              <SelectTrigger className="w-48 bg-slate-50 border-slate-100 rounded-xl h-11">
+              <SelectTrigger className="w-52 bg-slate-50 border-slate-100 rounded-xl h-11 text-xs font-bold">
                 <SelectValue placeholder="Platform" />
               </SelectTrigger>
               <SelectContent className="bg-white rounded-xl">
                 <SelectItem value="all">Every Organization</SelectItem>
+                <SelectItem value="foundation">Foundation (ফাউন্ডেশন)</SelectItem>
                 <SelectItem value="poor-fund">Poor Fund (দরিদ্র তহবিল)</SelectItem>
-                <SelectItem value="rehabilitation">Rehabilitation</SelectItem>
-                <SelectItem value="kidscare">Kids Care</SelectItem>
-                <SelectItem value="food-bank">Food Bank</SelectItem>
-                <SelectItem value="library">Library Library</SelectItem>
+                <SelectItem value="rehabilitation">Rehabilitation (রিল্যাবিলিটেশন)</SelectItem>
+                <SelectItem value="kidscare">Kids Care (শিশু যত্ন)</SelectItem>
+                <SelectItem value="food-bank">Food Bank (খাদ্য ব্যাংক)</SelectItem>
+                <SelectItem value="blood-bank">Blood Bank (রক্ত দান)</SelectItem>
+                <SelectItem value="sporting-club">Sporting Club (খেলাধুলা)</SelectItem>
+                <SelectItem value="academic-care">Academic Care (একাডেমিক)</SelectItem>
+                <SelectItem value="it-education">IT Education (আইটি শিক্ষা)</SelectItem>
+                <SelectItem value="library">Library (লাইব্রেরি)</SelectItem>
               </SelectContent>
             </Select>
 
@@ -212,7 +234,7 @@ export default function DonationsAdmin() {
       {/* Donations List */}
       <div className="space-y-4">
         <AnimatePresence initial={false}>
-          {filteredDonations.map(donation => {
+          {sortedDonations.map(donation => {
             const timeObj = formatTimestamp(donation.createdAt);
             return (
               <motion.div
@@ -334,9 +356,9 @@ export default function DonationsAdmin() {
             );
           })}
 
-          {filteredDonations.length === 0 && (
-            <div className="py-20 text-center text-slate-400 font-black bg-white rounded-3xl border border-dashed border-slate-200">
-              No matching donation records found. Adjust your search.
+          {sortedDonations.length === 0 && (
+            <div className="py-20 text-center text-slate-400 font-bold bg-white rounded-3xl border border-dashed border-slate-250">
+              No matching donation records found. Adjust filters or search terms.
             </div>
           )}
         </AnimatePresence>

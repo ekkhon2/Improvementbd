@@ -339,7 +339,23 @@ export default function Home() {
           </div>
         )}
 
-        <div className="container mx-auto px-4 relative z-10 -mt-10 md:-mt-32 pb-12 md:pb-24">
+        <div className="container mx-auto px-4 relative z-10 mt-16 md:mt-24 pb-12 md:pb-24">
+          <div className="text-center mb-16 space-y-4">
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-accent/10 text-accent font-bold text-xs uppercase tracking-widest">
+              {language === 'bn' ? 'আমাদের সামাজিক প্ল্যাটফর্মসমূহ' : 'Our Social Platforms'}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black text-primary tracking-tight">
+              {language === 'bn' ? 'সবার কল্যাণে আমাদের ১০টি সেবা খাত' : '10 Services Dedicated to Humanity'}
+            </h2>
+            <div className="w-16 h-1 bg-accent mx-auto rounded-full"></div>
+            <p className="text-secondary font-medium max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+              {language === 'bn' 
+                ? 'ইমপ্রুভমেন্ট বিডি সুবিধাবঞ্চিত ও অসহায় মানুষের সামগ্রিক মান উন্নয়নে ও সামাজিক শিক্ষা প্রসারে এই ১০টি অঙ্গ-প্ল্যাটফর্মের মাধ্যমে কাজ করে যাচ্ছে।'
+                : 'Improvement BD is actively working across 10 specialized welfare domains to uplift underprivileged communities and foster professional development.'
+              }
+            </p>
+          </div>
+
           <Swiper
             modules={[Autoplay, Pagination, Navigation]}
             spaceBetween={24}

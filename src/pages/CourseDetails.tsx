@@ -405,7 +405,7 @@ export default function CourseDetails() {
                         className={`h-14 font-black rounded-2xl border-2 border-slate-100 hover:bg-slate-50 text-slate-700 gap-2 ${!course.demoPlaylistUrl ? 'col-span-2' : ''}`}
                         onClick={() => {
                           const msg = encodeURIComponent(`Hello! I'm interested in the ${course.title} course. Can I get more details?`);
-                          const whatsappNumber = isIT ? '8801819417935' : '8801518975474';
+                          const whatsappNumber = isIT ? '8801711157183' : '8801518975474';
                           window.open(`https://wa.me/${whatsappNumber}?text=${msg}`, '_blank');
                         }}
                       >
@@ -446,12 +446,12 @@ export default function CourseDetails() {
                     <div>
                       <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Chat with Advisor</p>
                       <a 
-                        href={`https://wa.me/${isIT ? '8801819417935' : '8801518975474'}`} 
+                        href={`https://wa.me/${isIT ? '8801711157183' : '8801518975474'}`} 
                         target="_blank" 
                         rel="noreferrer" 
                         className="text-lg font-black tracking-tight hover:text-accent transition-colors"
                       >
-                        {isIT ? '01819417935' : '01518975474'}
+                        {isIT ? '01711157183' : '01518975474'}
                       </a>
                     </div>
                   </div>

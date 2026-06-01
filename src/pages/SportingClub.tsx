@@ -128,7 +128,7 @@ export default function SportingClub() {
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="text-2xl md:text-6xl font-bold text-white mb-2 md:mb-4"
+                        className="text-2xl md:text-4xl font-black text-white mb-2 md:mb-4"
                       >
                         {banners[currentBanner]?.title}
                       </motion.h1>
@@ -136,7 +136,7 @@ export default function SportingClub() {
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.3 }}
-                        className="text-sm md:text-2xl text-white/80 mb-6 md:mb-8"
+                        className="text-xs md:text-lg text-white/80 mb-6 md:mb-8"
                       >
                         {banners[currentBanner]?.subtitle}
                       </motion.p>
@@ -216,11 +216,11 @@ export default function SportingClub() {
               ইমপ্রুভমেন্ট স্পোর্টিং ক্লাব
             </motion.div>
             
-            <h2 className="text-4xl md:text-7xl font-black tracking-tight leading-tight">
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
               {language === 'bn' ? 'আমাদের বিজয়ী দলের অংশ হোন!' : 'Become Part of Our Winning Team!'}
             </h2>
             
-            <p className="text-xl md:text-2xl text-white/70 font-medium">
+            <p className="text-base md:text-lg text-white/70 font-medium">
               {language === 'bn' 
                 ? 'মাদককে না বলুন, খেলাধুলাকে হ্যাঁ বলুন। আজই আমাদের মেম্বার হিসেবে যুক্ত হোন।' 
                 : 'Say no to drugs, say yes to sports. Join us as a member today.'}
@@ -229,7 +229,7 @@ export default function SportingClub() {
             <div className="flex flex-wrap justify-center gap-6">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-12 h-16 md:h-20 text-xl font-black rounded-2xl shadow-2xl shadow-accent/40 group transition-all hover:scale-105 active:scale-95">
+                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-10 h-14 md:h-16 text-lg font-black rounded-[1.25rem] shadow-2xl shadow-accent/40 group transition-all hover:scale-105 active:scale-95">
                     <UserPlus className="h-6 w-6 mr-3 group-hover:rotate-12 transition-transform" />
                     {language === 'bn' ? 'সদস্য হতে আবেদন করুন' : 'Apply for Membership'}
                   </Button>
@@ -261,7 +261,7 @@ export default function SportingClub() {
       <section className="py-24 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl md:text-6xl font-black text-primary tracking-tight">পূর্ণাঙ্গ কমিটি (Full Committee)</h2>
+            <h2 className="text-2xl md:text-4xl font-black text-primary tracking-tight">পূর্ণাঙ্গ কমিটি (Full Committee)</h2>
             <div className="w-24 h-1.5 bg-accent mx-auto rounded-full"></div>
             <p className="text-secondary font-medium max-w-2xl mx-auto">ইমপ্রুভমেন্ট স্পোর্টিং ক্লাবের মূল চালিকাশক্তি। একতা এবং নিষ্ঠার সাথে যারা ক্লাবের উন্নয়নে কাজ করছেন।</p>
           </div>

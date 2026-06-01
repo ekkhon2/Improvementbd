@@ -4,7 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, HandHelping, Globe, MapPin, ChevronRight, Phone, ArrowLeft } from 'lucide-react';
+import { 
+  Heart, Users, HandHelping, Globe, MapPin, ChevronRight, Phone, ArrowLeft,
+  GraduationCap, ShieldAlert, Lightbulb, TrendingUp, Award, Smile, Sprout, Gift, Moon, CloudSnow, Droplets, HeartPulse
+} from 'lucide-react';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
@@ -88,12 +91,13 @@ export default function Foundation() {
               referrerPolicy="no-referrer"
             />
           </div>
-          <h1 className="text-3xl md:text-6xl font-extrabold mb-4 md:mb-6 tracking-tight">Improvement Foundation</h1>
+                    <h1 className="text-3xl md:text-6xl font-extrabold mb-4 md:mb-6 tracking-tight">Improvement Foundation</h1>
           <p className="text-lg md:text-xl opacity-80 max-w-2xl mx-auto leading-relaxed px-4">
             {language === 'bn' 
-              ? 'মানবতার সেবায় আমরা অঙ্গীকারবদ্ধ। আমাদের বিভিন্ন সামাজিক উন্নয়নমূলক কর্মকাণ্ডের মাধ্যমে আমরা একটি সুন্দর সমাজ গড়তে কাজ করছি।'
-              : 'Humanity Acknowledged, Lives Transformed. We are dedicated to building a better society through compassionate social initiatives.'}
+              ? 'মানবতার সেবায় আমরা অঙ্গীকারবদ্ধ ও সবসময় পাশে আছি।' 
+              : 'Dedicated to serving humanity with commitment and transparency.'}
           </p>
+
           <div className="mt-8 md:mt-12">
             <Dialog>
               <DialogTrigger asChild>
@@ -108,71 +112,184 @@ export default function Foundation() {
           </div>
 
           {/* Welcome Message */}
-          <div className="max-w-4xl mx-auto mt-16 text-left bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/10 shadow-xl">
-            <h2 className="text-xl font-black text-white mb-4 flex items-center gap-2">
-              <HandHelping className="h-5 w-5 text-accent" />
-              {language === 'bn' ? 'শুভেচ্ছা বার্তা' : 'Welcome Message'}
-            </h2>
-            <p className="text-white/80 leading-relaxed text-sm md:text-base font-medium whitespace-pre-line">
-              {language === 'bn' 
-                ? `আমরা যে সমাজে বেড়ে উঠেছি, মানুষ হিসেবে তার প্রতি আমাদের বড় একটি দায়িত্ব রয়েছে। একা কখনোই বড় হওয়া সম্ভব নয়; পরিবার ও চারপাশের সকল মানুষের সাহায্যেই আমরা এগিয়ে চলি। এই দায়বদ্ধতা থেকেই ইমপ্রুভমেন্ট ফাউন্ডেশনের পথচলা। 
+          <div className="max-w-4xl mx-auto mt-16 text-left bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/10 shadow-xl space-y-6">
+            <div>
+              <h2 className="text-xl font-black text-white mb-2 flex items-center gap-2">
+                <HandHelping className="h-5 w-5 text-accent" />
+                {language === 'bn' ? 'শুভেচ্ছা বার্তা' : 'Welcome Message'}
+              </h2>
+              <p className="text-white/95 leading-relaxed text-sm md:text-base font-semibold">
+                {language === 'bn' 
+                  ? 'আমরা যে সমাজে বেড়ে উঠেছি, মানুষ হিসেবে তার প্রতি আমাদের রয়েছে গভীর দায়িত্ব। এই দায়বদ্ধতা থেকেই অসহায় মানুষের কল্যাণে আমাদের এই পথচলা।'
+                  : 'Empowered by a deep sense of responsibility to our society, we walk together to stand beside those in need.'
+                }
+              </p>
+            </div>
 
-আমরা নিজেদের সর্বোচ্চ সামর্থ্য দিয়ে ঢাকা শহরের এবং পুরো বাংলাদেশের প্রতিটি অলিতে-গলিতে মানুষের পাশে থাকার লক্ষ্যে কাজ করে যাচ্ছি। আসুন, আমাদের এই পথচলায় আপনিও সামর্থ্য অনুযায়ী অংশ নিন। সবার সদিচ্ছায় একদিন বিজয় হবেই ইনশাআল্লাহ্।`
-                : `We have a profound responsibility to the society we grew up in. None of us can succeed alone; we rely on our families, communities, and those around us. Out of this gratitude, the Improvement Foundation was born.
-
-We are dedicated to working tirelessly across every corner of Dhaka and eventually all of Bangladesh to stand alongside people in need. Join us on this journey to make a positive impact in our society.`
-              }
-            </p>
+            {/* Platform WhatsApp/Contact Block */}
+            <div className="bg-emerald-600/20 rounded-2xl p-4 md:p-6 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 animate-pulse">
+                  <Phone className="h-6 w-6" />
+                </div>
+                <div className="text-left">
+                  <span className="text-[10px] text-emerald-300 font-bold uppercase tracking-widest block font-mono">Emergency Contact & WhatsApp</span>
+                  <p className="text-lg font-black text-white">
+                    {language === 'bn' ? 'হীরা - 01625230727' : 'Hira - 01625230727'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button 
+                  onClick={() => window.open('https://wa.me/8801625230727', '_blank')}
+                  className="bg-emerald-500 hover:bg-emerald-400 text-white font-black rounded-xl text-xs uppercase px-4 h-10 w-full sm:w-auto"
+                >
+                  WhatsApp Us
+                </Button>
+                <Button 
+                  onClick={() => window.open('tel:+8801625230727')}
+                  className="bg-white text-emerald-600 hover:bg-slate-100 font-black rounded-xl text-xs uppercase px-4 h-10 w-full sm:w-auto border border-emerald-500/10"
+                >
+                  Call Now
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Activities */}
-      <section className="py-12 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-            <Card className="text-center p-6 border-accent/20 rounded-[2rem] shadow-xl shadow-slate-100">
-              <CardHeader>
-                <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Globe className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>পরিবেশ রক্ষা</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">গাছ লাগানো এবং পরিবেশ সচেতনতা বৃদ্ধিতে আমরা নিয়মিত কাজ করি।</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-6 border-accent/20 rounded-[2rem] shadow-xl shadow-slate-100">
-              <CardHeader>
-                <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>শিক্ষা সহায়তা</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">অসহায় শিক্ষার্থীদের শিক্ষা উপকরণ এবং আর্থিক সহায়তা প্রদান।</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-6 border-accent/20 rounded-[2rem] shadow-xl shadow-slate-100">
-              <CardHeader>
-                <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Heart className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>ত্রাণ বিতরণ</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">প্রাকৃতিক দুর্যোগে ক্ষতিগ্রস্তদের মাঝে খাদ্য ও প্রয়োজনীয় সামগ্রী বিতরণ।</p>
-              </CardContent>
-            </Card>
+      <section className="py-12 md:py-20 bg-slate-50/30">
+        <div className="container mx-auto px-4 space-y-12">
+          <div className="text-center space-y-4 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-5xl font-black text-primary tracking-tight">
+              {language === 'bn' ? 'আমাদের মূল সেবা কার্যক্রমসমূহ' : 'Our Core Humanitarian Services'}
+            </h2>
+            <p className="text-muted-foreground font-semibold text-sm md:text-base">
+              {language === 'bn' 
+                ? 'ইমপ্রুভমেন্ট ফাউন্ডেশন সবসময় সর্বোচ্চ সততা ও নিষ্ঠার সাথে মানবতার কল্যাণে নিম্নোক্ত ক্ষেত্রগুলোতে কাজ পরিচালনা করে আসছে:'
+                : 'Improvement Foundation operates tirelessly with maximum honesty and dedication in the following humanitarian pillars:'}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-24">
+            {[
+              {
+                titleBn: 'স্কিল ডেভেলপমেন্ট ইনস্টিটিউট',
+                titleEn: 'Skill Development Institute',
+                icon: GraduationCap,
+                descBn: 'তরুণদের পেশাগত কাজের জন্য আইটি ও কারিগরি ক্ষেত্রে দক্ষ করে তোলা।',
+                descEn: 'Empowering youth with certified technical and software literacy skills.'
+              },
+              {
+                titleBn: 'দুর্যোগে ত্রাণ ও পুনর্বাসন',
+                titleEn: 'Disaster Relief & Rehabilitation',
+                icon: ShieldAlert,
+                descBn: 'প্রাকৃতিক দুর্যোগে ক্ষতিগ্রস্তদের জরুরি খাদ্য, ডেকোরাম ও টেকসই আশ্রয়ের ব্যবস্থা করা।',
+                descEn: 'Immediate high-nutrition food, medical, and shelter facilities during disasters.'
+              },
+              {
+                titleBn: 'দক্ষতাভিত্তিক উদ্যোক্তা তৈরি',
+                titleEn: 'Skill-based Entrepreneurship',
+                icon: Lightbulb,
+                descBn: 'প্র্যাকটিক্যাল আইডিয়া ও ফান্ডিং দিয়ে নতুন স্বাবলম্বী ব্যবসা দাঁড়ানো।',
+                descEn: 'Empowering individuals to establish micro-business startups with guidance.'
+              },
+              {
+                titleBn: 'স্বাবলম্বীকরণ',
+                titleEn: 'Self-Sustainment Support',
+                icon: TrendingUp,
+                descBn: 'দরিদ্র ও পিছিয়ে পড়া পরিবারকে দীর্ঘস্থায়ী আয়ের সোর্স তৈরি করে দেওয়া।',
+                descEn: 'Long-term self-reliance support and tools for underprivileged households.'
+              },
+              {
+                titleBn: 'মেধাবী কার্যক্রম',
+                titleEn: 'Talented Student Support',
+                icon: Award,
+                descBn: 'অর্থের অভাবে ঝরে পড়া মেধাবী শিক্ষার্থীদের আর্থিক সাহায্য ও শিক্ষা উপকরণ প্রদান।',
+                descEn: 'Financial assistance, stipends, and materials for bright students.'
+              },
+              {
+                titleBn: 'দাওয়াহ কার্যক্রম',
+                titleEn: 'Dawah Initiatives',
+                icon: Smile,
+                descBn: 'ইসলামের সঠিক, শান্তিপূর্ণ ও সুশৃঙ্খল জ্ঞান সর্বস্তরের মানুষের কাছে পৌঁছে দেওয়া।',
+                descEn: 'Promoting authentic Islamic wisdom, ethical behavior, and morals.'
+              },
+              {
+                titleBn: 'বৃক্ষরোপণ',
+                titleEn: 'Tree Plantation Drives',
+                icon: Sprout,
+                descBn: 'জলবায়ু পরিবর্তনের মারাত্মক ঝুঁকি মোকাবেলায় দেশব্যাপী বনায়ন ও গাছ রোপণ।',
+                descEn: 'Planting fruit and forest trees nationwide to support safe environment.'
+              },
+              {
+                titleBn: 'সবার জন্য কুরবানী',
+                titleEn: 'Qurbani For All',
+                icon: Gift,
+                descBn: 'সুবিধাবঞ্চিত ও অভাবী পরিবারগুলোর মাঝে ঈদুল আজহায় কোরবানির গোশত বিতরণ।',
+                descEn: 'Distributing custom meat packages in poverty-stricken communities.'
+              },
+              {
+                titleBn: 'ইফতার বিতরণ',
+                titleEn: 'Iftar Distribution',
+                icon: Moon,
+                descBn: 'পবিত্র রমজানে প্রতিদিন অভাবী রোজাদার ও সাধারণ পথচারীদের নিয়ে পুষ্টিকর ইফতার উৎসব।',
+                descEn: 'Providing highly hygienic warm meals and fresh water for fasting individuals.'
+              },
+              {
+                titleBn: 'শীতবস্ত্র বিতরণ',
+                titleEn: 'Winter Blanket Distribution',
+                icon: CloudSnow,
+                descBn: 'প্রতি বছর কনকনে শীতে অসহায় মানুষের মাঝে কম্বল ও উন্নত গরম কাপড় প্রদান।',
+                descEn: 'Distributing warm thick blankets and winter jackets to cold-hit regions.'
+              },
+              {
+                titleBn: 'নলকূপ ও পানি শোধনাগার স্থাপন',
+                titleEn: 'Safe Tube-wells Installation',
+                icon: Droplets,
+                descBn: 'মারাত্মক সুপেয় পানির সংকট এলাকায় বিশুদ্ধ পানির টিউবওয়েল ও ওয়াটার ফিল্টার স্থাপন।',
+                descEn: 'Ensuring safe drinking water by building deep tube-wells and filter stations.'
+              },
+              {
+                titleBn: 'চিকিৎসা সেবা',
+                titleEn: 'Medical & Healthcare Clinics',
+                icon: HeartPulse,
+                descBn: 'প্রয়োজনীয় চিকিৎসা পরামর্শ ও সম্পূর্ণ বিনামূল্যে জীবনরক্ষাকারী ওষুধ বিতরণ ক্যাম্প।',
+                descEn: 'Running professional medical diagnostic camps and supplying free prescription medicines.'
+              }
+            ].map((activity, idx) => {
+              const IconComp = activity.icon;
+              return (
+                <Card 
+                  key={idx} 
+                  className="rounded-3xl border border-slate-100 hover:border-accent p-6 hover:shadow-xl hover:shadow-slate-100/80 transition-all duration-300 bg-white group cursor-default"
+                >
+                  <CardHeader className="p-0 mb-4 flex flex-col items-start">
+                    <div className="w-12 h-12 bg-accent/10 group-hover:bg-accent rounded-2xl flex items-center justify-center text-accent group-hover:text-white transition-all mb-4 self-start">
+                      <IconComp className="h-6 w-6" />
+                    </div>
+                    <CardTitle className="text-lg font-black text-primary text-left leading-tight tracking-tight">
+                      {language === 'bn' ? activity.titleBn : activity.titleEn}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <p className="text-xs text-muted-foreground font-semibold text-left leading-relaxed">
+                      {language === 'bn' ? activity.descBn : activity.descEn}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           {!selectedArea ? (
             <div className="space-y-12">
               <div className="text-center space-y-4">
                 <h2 className="text-4xl font-black text-primary tracking-tight">এলাকাভিত্তিক কমিটি</h2>
-                <p className="text-muted-foreground max-w-xl mx-auto">আমাদের ফাউন্ডেশনের কার্যক্রম এলাকাভিত্তিক কমিটির মাধ্যমে পরিচালিত হয়। আপনার এলাকার কমিটি দেখতে নিচে ক্লিক করুন।</p>
+                <p className="text-muted-foreground max-w-xl mx-auto font-medium text-sm">আমাদের ফাউন্ডেশনের কার্যক্রম এলাকাভিত্তিক কমিটির মাধ্যমে পরিচালিত হয়। আপনার এলাকার কমিটি দেখতে নিচে ক্লিক করুন।</p>
               </div>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {areas.length > 0 ? areas.map(area => (
                   <button 

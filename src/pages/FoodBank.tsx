@@ -3,7 +3,7 @@ import { useLanguage } from '@/src/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { Utensils, Users, HandHelping, ShoppingBasket, Plus, Trash2, Send, Calendar } from 'lucide-react';
+import { Utensils, Users, HandHelping, ShoppingBasket, Plus, Trash2, Send, Calendar, Heart } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
-import { collection, query, onSnapshot, where, orderBy } from 'firebase/firestore';
+import { collection, query, onSnapshot, where, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface Member {
@@ -44,6 +44,13 @@ export default function FoodBank() {
   ]);
   const [message, setMessage] = useState('');
   const [isDonationDialogOpen, setIsDonationDialogOpen] = useState(false);
+  
+  // Custom payment details states for Admin tracking
+  const [donorName, setDonorName] = useState('');
+  const [donorPhone, setDonorPhone] = useState('');
+  const [payMethod, setPayMethod] = useState('');
+  const [txId, setTxId] = useState('');
+  const [formError, setFormError] = useState('');
 
   useEffect(() => {
     const q = query(
@@ -114,8 +121,28 @@ export default function FoodBank() {
     return donationRows.reduce((sum, row) => sum + row.subTotal, 0);
   };
 
-  const handleSendDonation = () => {
+  const handleSendDonation = async () => {
+    if (!donorName || !donorPhone || !payMethod || !txId) {
+      setFormError(language === 'bn' ? 'অনুগ্রহ করে সব প্রয়োজনীয় তথ্য পূরণ করুন।' : 'Please fill in all required fields.');
+      return;
+    }
+    
+    // Check if meal is chose
+    const totalAmount = calculateTotal();
+    if (totalAmount <= 0) {
+      setFormError(language === 'bn' ? 'অনুগ্রহ করে কমপক্ষে ১টি মেল আইটেম নির্বাচন করুন।' : 'Please select at least one meal item.');
+      return;
+    }
+
+    setFormError('');
+
     let donationText = `*New Special Meal Donation Request*\n\n`;
+    donationText += `*Donor Name:* ${donorName}\n`;
+    donationText += `*Sender Phone:* ${donorPhone}\n`;
+    donationText += `*Payment Method:* ${payMethod}\n`;
+    donationText += `*Transaction ID:* ${txId}\n\n`;
+
+    let summaryNote = `[Special Meal Summary]\n`;
     donationRows.forEach((row, index) => {
       const menuItem = menuItems.find(m => m.id === row.mealItemId);
       donationText += `*Item ${index + 1}:*\n`;
@@ -123,14 +150,47 @@ export default function FoodBank() {
       donationText += `- Menu: ${menuItem ? menuItem.name : 'Not selected'}\n`;
       donationText += `- Quantity: ${row.quantity}\n`;
       donationText += `- Sub Total: ৳${row.subTotal}\n\n`;
+      
+      summaryNote += `- Date: ${row.date || 'Any Date'}, Menu: ${menuItem ? menuItem.name : 'N/A'}, Qty: ${row.quantity}, Cost: ৳${row.subTotal}\n`;
     });
-    donationText += `*Total Amount:* ৳${calculateTotal()}\n`;
+    
+    donationText += `*Total Amount:* ৳${totalAmount}\n`;
     if (message) {
       donationText += `\n*Message:* ${message}`;
+      summaryNote += `\nMessage: ${message}`;
     }
 
-    const whatsappUrl = `https://wa.me/8801819417935?text=${encodeURIComponent(donationText)}`;
-    window.open(whatsappUrl, '_blank');
+    try {
+      await addDoc(collection(db, 'donations'), {
+        platform: 'food-bank',
+        platformName: 'Food Bank - Special Meal',
+        name: donorName,
+        sourceNumber: donorPhone,
+        method: payMethod,
+        transactionId: txId,
+        amount: Number(totalAmount),
+        note: summaryNote,
+        paymentType: 'special-meal',
+        status: 'pending',
+        createdAt: serverTimestamp()
+      });
+
+      const whatsappUrl = `https://wa.me/8801953568902?text=${encodeURIComponent(donationText)}`;
+      window.open(whatsappUrl, '_blank');
+      
+      setDonorName('');
+      setDonorPhone('');
+      setPayMethod('');
+      setTxId('');
+      setMessage('');
+      setIsDonationDialogOpen(false);
+      
+      alert(language === 'bn' 
+        ? 'আপনার স্পেশাল মিল বুকিং সফলভাবে সিস্টেমে রেকর্ড করা হয়েছে! আপনাকে হোয়াটস্যাপে নিয়ে যাওয়া হচ্ছে।' 
+        : 'Your special meal booking has been saved successfully in records. Redirecting you to WhatsApp now.');
+    } catch (err: any) {
+      handleFirestoreError(err, OperationType.CREATE, 'donations');
+    }
   };
 
   return (
@@ -287,6 +347,70 @@ export default function FoodBank() {
                     >
                       <Plus className="h-5 w-5 mr-2" /> Add More Rows
                     </Button>
+
+                    {/* Donor and Payment Validation Section */}
+                    <div className="bg-emerald-500/5 p-6 rounded-3xl border border-emerald-500/10 space-y-4 my-6 text-left">
+                      <h4 className="text-emerald-800 font-black text-sm uppercase tracking-wide flex items-center gap-2">
+                        <Heart className="h-4 w-4 text-emerald-600 animate-pulse" />
+                        {language === 'bn' ? 'দাতা ও পেমেন্ট বিবরণী' : 'Donor & Payment details'}
+                      </h4>
+                      
+                      {formError && (
+                        <div className="text-xs font-bold text-red-500 p-3 bg-red-50 rounded-xl">
+                          {formError}
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                            {language === 'bn' ? 'দাতার নাম *' : 'Donor Name *'}
+                          </Label>
+                          <Input 
+                            value={donorName} 
+                            onChange={(e) => setDonorName(e.target.value)} 
+                            placeholder={language === 'bn' ? 'যেমন: মোহাম্মদ আরিফ' : 'e.g. Mohd Arif'} 
+                            className="bg-white border-slate-200 rounded-xl h-11 text-sm font-semibold"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                            {language === 'bn' ? 'প্রেরক মোবাইল *' : 'Sender Phone *'}
+                          </Label>
+                          <Input 
+                            value={donorPhone} 
+                            onChange={(e) => setDonorPhone(e.target.value)} 
+                            placeholder={language === 'bn' ? 'যেমন: 017xxxxxxxx' : 'e.g. 017xxxxxxxx'} 
+                            className="bg-white border-slate-200 rounded-xl h-11 text-sm font-semibold"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                            {language === 'bn' ? 'পেমেন্ট মাধ্যম (বিকাশ/নগদ/রকেট/ব্যাংক) *' : 'Payment Method (bKash/Nagad/Rocket/Bank) *'}
+                          </Label>
+                          <Input 
+                            value={payMethod} 
+                            onChange={(e) => setPayMethod(e.target.value)} 
+                            placeholder={language === 'bn' ? 'যেমন: bKash' : 'e.g. bKash'} 
+                            className="bg-white border-slate-200 rounded-xl h-11 text-sm font-semibold"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                            {language === 'bn' ? 'ট্রানজেকশন আইডি *' : 'Transaction ID (TxID) *'}
+                          </Label>
+                          <Input 
+                            value={txId} 
+                            onChange={(e) => setTxId(e.target.value)} 
+                            placeholder={language === 'bn' ? 'যেমন: TR289A0BD' : 'e.g. TR289A0BD'} 
+                            className="bg-slate-50 border-slate-200 focus:bg-white rounded-xl h-11 text-sm font-semibold font-mono"
+                          />
+                        </div>
+                      </div>
+                    </div>
 
                     <div className="space-y-2 mt-8">
                       <Label className="font-bold text-slate-500 uppercase tracking-widest text-xs">ENTER YOUR MESSAGE</Label>

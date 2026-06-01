@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { db } from '@/src/lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, setDoc, getDoc } from 'firebase/firestore';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getPlatformContact } from '@/src/lib/utils';
 
 interface MemberFormProps {
   platform: string;
@@ -133,11 +134,8 @@ export default function MemberForm({ platform, platformName, onSuccess }: Member
       const whatsappMessage = `Hello Improvement BD, I am ${formData.fullName}. I want to join: ${selectedPlatformNames}. \nPhone: ${formData.phonePrimary}${formData.phoneSecondary ? ` / ${formData.phoneSecondary}` : ''}\nAddress: ${formData.address}${formData.bloodGroup ? `\nBlood Group: ${formData.bloodGroup}` : ''}${finalMembershipId ? `\nMembership ID: ${finalMembershipId}` : ''}`;
       const encodedMessage = encodeURIComponent(whatsappMessage);
       
-      const whatsappNumber = platforms.includes('library') 
-        ? '01640679394' 
-        : platforms.includes('academic-care') 
-          ? '01518975474' 
-          : '01819417935';
+      const contact = getPlatformContact(platform);
+      const whatsappNumber = contact.phone;
       const whatsappUrl = `https://wa.me/880${whatsappNumber.substring(1)}?text=${encodedMessage}`; 
       
       window.open(whatsappUrl, '_blank');

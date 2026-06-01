@@ -86,7 +86,7 @@ export default function BookDetails() {
 
   const handleBorrowRequest = () => {
     const msg = encodeURIComponent(`Hello! I'd like to borrow the book "${book.title}" (Code: ${book.code}). Is it available?`);
-    window.open(`https://wa.me/8801640679394?text=${msg}`, '_blank');
+    window.open(`https://wa.me/8801518975474?text=${msg}`, '_blank');
   };
 
   return (
@@ -136,7 +136,7 @@ export default function BookDetails() {
                   {book.status === 'available' ? 'Borrow This Book' : 'Currently Unavailable'}
                 </Button>
                 <p className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  Library Contact: 01640679394
+                  Library Contact: 01518975474 (Emam)
                 </p>
               </div>
             </motion.div>
