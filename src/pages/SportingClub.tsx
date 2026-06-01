@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/src/context/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Trophy, Users, HandHelping, Gamepad2, ChevronLeft, ChevronRight, Phone, Facebook, ShieldCheck, UserPlus } from 'lucide-react';
+import { Trophy, Users, HandHelping, Gamepad2, ChevronLeft, ChevronRight, Phone, Facebook, ShieldCheck, UserPlus, ArrowRight, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
@@ -29,6 +30,7 @@ import { useSEO } from '@/src/hooks/useSEO';
 
 export default function SportingClub() {
   const { language, t } = useLanguage();
+  const navigate = useNavigate();
   useSEO({
     title: language === 'bn' ? 'স্পোর্টিং ক্লাব - ইমপ্রুভমেন্ট বিডি' : 'Sporting Club - Improvement BD',
     description: language === 'bn' 
@@ -37,6 +39,7 @@ export default function SportingClub() {
   });
   const [banners, setBanners] = useState<any[]>([]);
   const [committee, setCommittee] = useState<any[]>([]);
+  const [coaches, setCoaches] = useState<any[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
 
   useEffect(() => {
@@ -61,6 +64,16 @@ export default function SportingClub() {
       setCommittee(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, 'members');
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const q = query(collection(db, 'sports_coaches'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setCoaches(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'sports_coaches');
     });
     return () => unsubscribe();
   }, []);
@@ -258,13 +271,143 @@ export default function SportingClub() {
         </div>
       </section>
 
+      {/* Coaches Section */}
+      <section className="py-24 bg-slate-50 relative overflow-hidden">
+        <div className="container mx-auto px-4 max-w-7xl animate-in fade-in duration-500">
+          <div className="text-center mb-16 space-y-3">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs uppercase tracking-widest border border-emerald-200">
+              <Sparkles className="h-3 w-3" />
+              {language === 'bn' ? 'দক্ষ গাইডলাইন' : 'Expert Coaching'}
+            </span>
+            <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight">
+              {language === 'bn' ? 'আমাদের অত্যন্ত দক্ষ ও অভিজ্ঞ কোচবৃন্দ' : 'Our Highly Experienced Coaches'}
+            </h2>
+            <div className="w-20 h-1.5 bg-accent mx-auto rounded-full"></div>
+            <p className="text-secondary font-medium max-w-xl mx-auto text-sm md:text-base">
+              {language === 'bn' 
+                ? 'অনন্য প্রশিক্ষণ ও সঠিক দিশা দেওয়ার জন্য যারা সবসময় পাশে আছেন।' 
+                : 'Dedicated trainers and professionals guiding our players to success.'}
+            </p>
+          </div>
+
+          {coaches.length > 0 ? (
+            <div className="relative group/coaches">
+              <div 
+                id="coaches-track"
+                className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {coaches.map((coach) => (
+                  <div key={coach.id} className="w-[280px] sm:w-[320px] shrink-0 snap-start bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-[420px]">
+                    <div className="aspect-[4/5] bg-slate-100 relative overflow-hidden shrink-0">
+                      <img 
+                        src={coach.photoURL || 'https://images.unsplash.com/photo-1542156822-6924d1a71aba?w=400&auto=format&fit=crop&q=60'} 
+                        alt={coach.name} 
+                        className="w-full h-full object-cover object-top" 
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="p-5 flex-grow flex flex-col justify-between">
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-black tracking-widest text-emerald-600 uppercase font-mono">{coach.team}</p>
+                        <h3 className="text-base font-black text-primary leading-tight">{coach.name}</h3>
+                        <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
+                          <span className="font-bold text-slate-700">Skill: </span>
+                          {coach.specialSkill}
+                        </p>
+                      </div>
+                      {coach.fbId && (
+                        <div className="pt-3">
+                          <a 
+                            href={coach.fbId} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 bg-slate-950 hover:bg-emerald-600 text-white text-[11px] font-black rounded-xl transition-all uppercase tracking-wider shadow-sm font-mono"
+                          >
+                            <Facebook className="h-3.5 w-3.5 fill-current" />
+                            {language === 'bn' ? 'ফেসবুক আইডি' : 'Facebook ID'}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-white rounded-3xl border border-slate-200/80 opacity-60 italic">
+              {language === 'bn' ? 'কোনো কোচ তথ্য পাওয়া যায়নি।' : 'No coaches added yet.'}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Committee Section */}
       <section className="py-24 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-2xl md:text-4xl font-black text-primary tracking-tight">পূর্ণাঙ্গ কমিটি (Full Committee)</h2>
+          <div className="text-center mb-16 space-y-6">
+            <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight">পূর্ণাঙ্গ কমিটি (Full Committee)</h2>
             <div className="w-24 h-1.5 bg-accent mx-auto rounded-full"></div>
-            <p className="text-secondary font-medium max-w-2xl mx-auto">ইমপ্রুভমেন্ট স্পোর্টিং ক্লাবের মূল চালিকাশক্তি। একতা এবং নিষ্ঠার সাথে যারা ক্লাবের উন্নয়নে কাজ করছেন।</p>
+            <p className="text-secondary font-medium max-w-2xl mx-auto sm:text-base text-xs">ইমপ্রুভমেন্ট স্পোর্টিং ক্লাবের মূল চালিকাশক্তি। একতা এবং নিষ্ঠার সাথে যারা ক্লাবের উন্নয়নে কাজ করছেন।</p>
+            
+            <div className="flex justify-center pt-2">
+              <Button 
+                onClick={() => navigate('/sporting-club/players')}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold h-14 px-8 rounded-full shadow-lg shadow-emerald-500/20 group transition-all duration-300 hover:scale-105"
+              >
+                {language === 'bn' ? 'আমাদের খেলোয়াড়বৃন্দ দেখুন (See Our Players)' : 'See Our Players'}
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1.5 transition-transform" />
+              </Button>
+            </div>
+
+            {/* Our Teams Sliding Segment (Point 8) */}
+            <div className="pt-12 max-w-5xl mx-auto space-y-6">
+              <div className="flex items-center justify-center gap-2">
+                <div className="h-0.5 w-8 bg-slate-200"></div>
+                <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest font-mono">
+                  {language === 'bn' ? 'আমাদের সক্রিয় দলসমূহ' : 'Our Active Teams'}
+                </h3>
+                <div className="h-0.5 w-8 bg-slate-200"></div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {[
+                  {
+                    name: language === 'bn' ? 'ইমপ্রুভমেন্ট ক্রিকেট একাডেমি' : 'Improvement Cricket Academy',
+                    logo: 'https://images.unsplash.com/photo-1540747737956-378724044302?w=150&auto=format&fit=crop&q=60'
+                  },
+                  {
+                    name: language === 'bn' ? 'ইমপ্রুভমেন্ট ফুটবল ক্লাব' : 'Improvement Football Club',
+                    logo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=150&auto=format&fit=crop&q=60'
+                  },
+                  {
+                    name: language === 'bn' ? 'ইমপ্রুভমেন্ট ই-স্পোর্টস নিনজাস' : 'Improvement Esports Ninjas',
+                    logo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&auto=format&fit=crop&q=60'
+                  },
+                  {
+                    name: language === 'bn' ? 'ইমপ্রুভমেন্ট অ্যাথলেটিক ক্লাব' : 'Improvement Athletic Club',
+                    logo: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=150&auto=format&fit=crop&q=60'
+                  }
+                ].map((team, idx) => (
+                  <div 
+                    key={idx} 
+                    className="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all duration-300 flex flex-col items-center text-center space-y-3 group"
+                  >
+                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-white shrink-0">
+                      <img 
+                        src={team.logo} 
+                        alt={team.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <p className="text-xs font-black text-slate-800 leading-tight group-hover:text-emerald-700 transition-colors">
+                      {team.name}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {sortedCommittee.length > 0 ? (

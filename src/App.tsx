@@ -10,6 +10,7 @@ import EducationPage from './pages/EducationPage';
 import Foundation from './pages/Foundation';
 import FoodBank from './pages/FoodBank';
 import SportingClub from './pages/SportingClub';
+import SportingPlayers from './pages/SportingPlayers';
 import Rehabilitation from './pages/Rehabilitation';
 import KidsCare from './pages/KidsCare';
 import PoorFund from './pages/PoorFund';
@@ -20,7 +21,7 @@ import GalleryPage from './pages/GalleryPage';
 import Shop from './pages/Shop';
 import TypingTest from './pages/TypingTest';
 import ExamCenter from './pages/ExamCenter';
-import { seedBanners, seedGallery, seedCourses, seedFoodMenu } from './lib/seed';
+import { seedBanners, seedGallery, seedCourses, seedFoodMenu, seedSportsCoaches } from './lib/seed';
 import ErrorBoundary from './components/ErrorBoundary';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -31,6 +32,7 @@ export default function App() {
     seedGallery();
     seedCourses();
     seedFoodMenu();
+    seedSportsCoaches();
   }, []);
 
   return (
@@ -48,6 +50,7 @@ export default function App() {
                 <Route path="/blood-bank" element={<BloodBank />} />
                 <Route path="/food-bank" element={<FoodBank />} />
                 <Route path="/sporting-club" element={<SportingClub />} />
+                <Route path="/sporting-club/players" element={<SportingPlayers />} />
                 <Route path="/rehabilitation" element={<Rehabilitation />} />
                 <Route path="/kidscare" element={<KidsCare />} />
                 <Route path="/poor-fund" element={<PoorFund />} />

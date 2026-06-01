@@ -44,6 +44,7 @@ export default function MemberForm({ platform, platformName, onSuccess }: Member
     preferredSport: '',
     skillLevel: '',
     teamName: '',
+    specialSkill: '',
     pod: '',
     availability: '',
     volunteerInterest: '',
@@ -100,21 +101,25 @@ export default function MemberForm({ platform, platformName, onSuccess }: Member
       }
 
       // Increment stats
-      const statsRef = doc(db, 'stats', 'totals');
-      const statsSnap = await getDoc(statsRef);
-      
-      if (!statsSnap.exists()) {
-        await setDoc(statsRef, {
-          members: 1,
-          donors: platforms.includes('blood-bank') ? 1 : 0,
-          books: 0,
-          recipients: 500
-        });
-      } else {
-        await updateDoc(statsRef, {
-          members: increment(1),
-          donors: platforms.includes('blood-bank') ? increment(1) : increment(0)
-        });
+      try {
+        const statsRef = doc(db, 'stats', 'totals');
+        const statsSnap = await getDoc(statsRef);
+        
+        if (!statsSnap.exists()) {
+          await setDoc(statsRef, {
+            members: 1,
+            donors: platforms.includes('blood-bank') ? 1 : 0,
+            books: 0,
+            recipients: 500
+          });
+        } else {
+          await updateDoc(statsRef, {
+            members: increment(1),
+            donors: platforms.includes('blood-bank') ? increment(1) : increment(0)
+          });
+        }
+      } catch (statsErr) {
+        console.warn('Could not update stats totals due to lack of permissions:', statsErr);
       }
 
       // Redirect to WhatsApp
@@ -344,6 +349,16 @@ export default function MemberForm({ platform, platformName, onSuccess }: Member
                   placeholder="যেমন: ইমপ্রুভমেন্ট টাইগার্স"
                   value={formData.teamName} 
                   onChange={(e) => setFormData({...formData, teamName: e.target.value})} 
+                  className="h-12 border-slate-200 rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="specialSkill" className="font-bold text-primary">বিশেষ দক্ষতা (Special Skill)</Label>
+                <Input 
+                  id="specialSkill" 
+                  placeholder="যেমন: ফাস্ট বোলার, অলরাউন্ডার, উইঙ্গার"
+                  value={formData.specialSkill} 
+                  onChange={(e) => setFormData({...formData, specialSkill: e.target.value})} 
                   className="h-12 border-slate-200 rounded-xl"
                 />
               </div>

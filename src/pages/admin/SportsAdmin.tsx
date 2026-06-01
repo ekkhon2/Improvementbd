@@ -20,6 +20,18 @@ export default function SportsAdmin() {
   const [editingBanner, setEditingBanner] = useState<any>(null);
   const [editingMember, setEditingMember] = useState<any>(null);
   
+  // Coach states
+  const [coaches, setCoaches] = useState<any[]>([]);
+  const [isCoachDialogOpen, setIsCoachDialogOpen] = useState(false);
+  const [editingCoach, setEditingCoach] = useState<any>(null);
+  const [coachFormData, setCoachFormData] = useState({
+    name: '',
+    fbId: '',
+    team: '',
+    specialSkill: '',
+    photoURL: ''
+  });
+  
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
@@ -56,6 +68,57 @@ export default function SportsAdmin() {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const q = query(collection(db, 'sports_coaches'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setCoaches(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'sports_coaches');
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleCoachSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingCoach) {
+        await updateDoc(doc(db, 'sports_coaches', editingCoach.id), coachFormData);
+      } else {
+        await addDoc(collection(db, 'sports_coaches'), {
+          ...coachFormData,
+          createdAt: serverTimestamp()
+        });
+      }
+      setIsCoachDialogOpen(false);
+      setEditingCoach(null);
+      setCoachFormData({ name: '', fbId: '', team: '', specialSkill: '', photoURL: '' });
+    } catch (error) {
+      handleFirestoreError(error, editingCoach ? OperationType.UPDATE : OperationType.CREATE, 'sports_coaches');
+    }
+  };
+
+  const handleEditCoach = (coach: any) => {
+    setEditingCoach(coach);
+    setCoachFormData({
+      name: coach.name || '',
+      fbId: coach.fbId || '',
+      team: coach.team || '',
+      specialSkill: coach.specialSkill || '',
+      photoURL: coach.photoURL || ''
+    });
+    setIsCoachDialogOpen(true);
+  };
+
+  const handleDeleteCoach = async (id: string) => {
+    if (confirm('Delete this coach profile permanently?')) {
+      try {
+        await deleteDoc(doc(db, 'sports_coaches', id));
+      } catch (error) {
+        handleFirestoreError(error, OperationType.DELETE, `sports_coaches/${id}`);
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,12 +198,15 @@ export default function SportsAdmin() {
       </div>
 
       <Tabs defaultValue="banners" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 h-14 p-1 bg-slate-100 rounded-2xl mb-8">
+        <TabsList className="grid w-full grid-cols-3 h-14 p-1 bg-slate-100 rounded-2xl mb-8">
           <TabsTrigger value="banners" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <ImageIcon className="h-4 w-4 mr-2" /> Banners
           </TabsTrigger>
           <TabsTrigger value="committee" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <Users className="h-4 w-4 mr-2" /> Committee
+          </TabsTrigger>
+          <TabsTrigger value="coaches" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <ShieldCheck className="h-4 w-4 mr-2" /> Coaches
           </TabsTrigger>
         </TabsList>
 
@@ -394,6 +460,135 @@ export default function SportsAdmin() {
               </form>
             </DialogContent>
           </Dialog>
+        </TabsContent>
+
+        <TabsContent value="coaches" className="space-y-8 outline-none">
+          <div className="flex justify-end">
+            <Dialog open={isCoachDialogOpen} onOpenChange={setIsCoachDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  className="bg-accent hover:bg-accent/90 text-white font-bold h-12 px-6 rounded-xl shadow-lg shadow-accent/20"
+                  onClick={() => {
+                    setEditingCoach(null);
+                    setCoachFormData({ name: '', fbId: '', team: '', specialSkill: '', photoURL: '' });
+                  }}
+                >
+                  <Plus className="h-5 w-5 mr-1" /> Add Coach
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md dialog-solid">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-primary">
+                    {editingCoach ? 'Edit Coach Profile' : 'Add New Coach'}
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleCoachSubmit} className="space-y-4 pt-4">
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">Name / নাম</Label>
+                    <Input 
+                      value={coachFormData.name}
+                      onChange={(e) => setCoachFormData({...coachFormData, name: e.target.value})}
+                      placeholder="e.g. সঞ্জিদ হাসান (Sanjid Hasan)"
+                      className="h-11 input-solid text-sm"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">Team Name / দলের নাম</Label>
+                    <Input 
+                      value={coachFormData.team}
+                      onChange={(e) => setCoachFormData({...coachFormData, team: e.target.value})}
+                      placeholder="e.g. Improvement Cricket Academy"
+                      className="h-11 input-solid text-sm"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">Special Skill / বিশেষ দক্ষতা</Label>
+                    <Input 
+                      value={coachFormData.specialSkill}
+                      onChange={(e) => setCoachFormData({...coachFormData, specialSkill: e.target.value})}
+                      placeholder="e.g. BCB Level 1 Certified Cricket Coach"
+                      className="h-11 input-solid text-sm"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">Facebook URL / ফেসবুক আইডি</Label>
+                    <Input 
+                      value={coachFormData.fbId}
+                      onChange={(e) => setCoachFormData({...coachFormData, fbId: e.target.value})}
+                      placeholder="e.g. https://facebook.com/username"
+                      className="h-11 input-solid text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">Photo URL / ছবির লিংক</Label>
+                    <Input 
+                      value={coachFormData.photoURL}
+                      onChange={(e) => setCoachFormData({...coachFormData, photoURL: e.target.value})}
+                      placeholder="e.g. https://images.unsplash.com/..."
+                      className="h-11 input-solid text-sm"
+                    />
+                  </div>
+
+                  <Button type="submit" className="w-full h-12 text-base font-bold rounded-xl shadow-lg">
+                    {editingCoach ? 'Save Coach Profile' : 'Create Coach Profile'}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {coaches.length > 0 ? (
+              coaches.map((c) => (
+                <div key={c.id} className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex items-start gap-4 justify-between group">
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-50 shrink-0 border border-slate-100">
+                      {c.photoURL ? (
+                        <img src={c.photoURL} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <Users className="h-6 w-6 text-slate-300 m-5" />
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-black text-slate-800 leading-tight">{c.name}</h4>
+                      <p className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider font-mono">{c.team}</p>
+                      <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">{c.specialSkill}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 shrink-0">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg"
+                      onClick={() => handleEditCoach(c)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg"
+                      onClick={() => handleDeleteCoach(c.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
+                <Users className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                <p className="text-sm font-semibold text-slate-400">No coaches added to the database yet.</p>
+              </div>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>

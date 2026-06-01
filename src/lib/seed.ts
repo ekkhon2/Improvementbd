@@ -388,3 +388,35 @@ export async function seedFoodMenu() {
     console.log('Food donation menu seeded successfully.');
   }
 }
+
+export async function seedSportsCoaches() {
+  const coachesRef = collection(db, 'sports_coaches');
+  const snapshot = await getDocs(coachesRef);
+  
+  if (snapshot.empty) {
+    console.log('Seeding sports coaches...');
+    const demoCoaches = [
+      {
+        name: 'সঞ্জিদ হাসান (Sanjid Hasan)',
+        fbId: 'https://fb.com',
+        team: 'Improvement Cricket Academy',
+        specialSkill: 'বিসিবি লেভেল ১ ক্রিকেট কোচ (BCB Level 1 Certified Cricket Coach)',
+        photoURL: 'https://images.unsplash.com/photo-1542156822-6924d1a71aba?w=400&auto=format&fit=crop&q=60',
+        createdAt: serverTimestamp()
+      },
+      {
+        name: 'নদিম ইসলাম (Nadim Islam)',
+        fbId: 'https://fb.com',
+        team: 'Improvement Junior Football Club',
+        specialSkill: 'ফিফা ডিপ্লোমা ইন ফুটবল কোচিং (FIFA Diploma in Football Coaching)',
+        photoURL: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&auto=format&fit=crop&q=60',
+        createdAt: serverTimestamp()
+      }
+    ];
+
+    for (const coach of demoCoaches) {
+      await addDoc(coachesRef, coach);
+    }
+    console.log('Sports coaches seeded successfully.');
+  }
+}

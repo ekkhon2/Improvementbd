@@ -222,6 +222,53 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["name", "perPersonCost"]
+    },
+    "SportsCoach": {
+      "title": "Sports Coach",
+      "description": "Coach profiles for sports academies",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "fbId": { "type": "string" },
+        "team": { "type": "string" },
+        "specialSkill": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "team", "specialSkill"]
+    },
+    "Donation": {
+      "title": "Donation",
+      "description": "General and special meal donations",
+      "type": "object",
+      "properties": {
+        "platform": { "type": "string" },
+        "platformName": { "type": "string" },
+        "name": { "type": "string" },
+        "method": { "type": "string" },
+        "amount": { "type": "number" },
+        "note": { "type": "string" },
+        "sourceNumber": { "type": "string" },
+        "transactionId": { "type": "string" },
+        "paymentType": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["platform", "name", "method", "amount"]
+    },
+    "LibraryFee": {
+      "title": "Library Fee",
+      "description": "Library membership fees collected",
+      "type": "object",
+      "properties": {
+        "memberId": { "type": "string" },
+        "memberName": { "type": "string" },
+        "amount": { "type": "number" },
+        "note": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "type": { "type": "string" }
+      },
+      "required": ["memberId", "amount", "date"]
     }
   },
   "firestore": {
@@ -238,6 +285,10 @@
     "/settings/{settingId}": { "schema": "Settings", "description": "Global app settings" },
     "/exams/{examId}": { "schema": "Exam", "description": "Exam definitions" },
     "/exam_submissions/{submissionId}": { "schema": "ExamSubmission", "description": "Exam results" },
-    "/food_donation_menu/{menuId}": { "schema": "FoodDonationMenu", "description": "Food Bank donation menu items" }
+    "/food_donation_menu/{menuId}": { "schema": "FoodDonationMenu", "description": "Food Bank donation menu items" },
+    "/sports_coaches/{coachId}": { "schema": "SportsCoach", "description": "Sports coaches profiles" },
+    "/sports_banners/{bannerId}": { "schema": "Banner", "description": "Sports club banners" },
+    "/donations/{donationId}": { "schema": "Donation", "description": "Platform donations" },
+    "/library_fees/{feeId}": { "schema": "LibraryFee", "description": "Library fee collections" }
   }
 }

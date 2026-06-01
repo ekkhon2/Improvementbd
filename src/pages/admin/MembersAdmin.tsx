@@ -44,6 +44,8 @@ export default function MembersAdmin() {
     weight: '',
     preferredSport: '',
     skillLevel: '',
+    teamName: '',
+    specialSkill: '',
     availability: '',
     volunteerInterest: '',
     area: '',
@@ -139,6 +141,8 @@ export default function MembersAdmin() {
         weight: '',
         preferredSport: '',
         skillLevel: '',
+        teamName: '',
+        specialSkill: '',
         availability: '',
         volunteerInterest: '',
         area: '',
@@ -442,6 +446,24 @@ export default function MembersAdmin() {
                           value={newMember.preferredSport} 
                           onChange={e => setNewMember({...newMember, preferredSport: e.target.value})}
                           className="h-12 input-solid"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="font-bold text-primary">টিমের নাম (Team Name)</Label>
+                        <Input 
+                          value={newMember.teamName} 
+                          onChange={e => setNewMember({...newMember, teamName: e.target.value})}
+                          className="h-12 input-solid"
+                          placeholder="যেমন: ইমপ্রুভমেন্ট টাইগার্স"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="font-bold text-primary">विशेष দক্ষতা (Special Skill)</Label>
+                        <Input 
+                          value={newMember.specialSkill} 
+                          onChange={e => setNewMember({...newMember, specialSkill: e.target.value})}
+                          className="h-12 input-solid"
+                          placeholder="যেমন: লেফট-আর্ম স্পিনার"
                         />
                       </div>
                       <div className="space-y-2">

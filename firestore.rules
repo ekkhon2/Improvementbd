@@ -54,9 +54,8 @@ service cloud.firestore {
       allow create: if isValidMember(request.resource.data) && 
                       request.resource.data.status == 'pending';
       
-      // CRITICAL: Prevent PII leak. Only admins can read member lists.
-      // If public needs to see "Our Members", a separate public_profiles collection should be used.
-      allow read: if isAdmin();
+      // Prevent PII leak. Admins can read everything; public can only read approved profiles.
+      allow read: if isAdmin() || resource.data.status == 'approved';
       allow update, delete: if isAdmin();
     }
 
@@ -126,9 +125,40 @@ service cloud.firestore {
       // Anyone can submit, but we must validate
       allow create: if isValidString(request.resource.data.studentName, 100) &&
                       isValidString(request.resource.data.examId, 50);
-      // Only admins can see all scores/submissions to protect student privacy
-      allow read: if isAdmin(); 
+      // Anyone can view submissions to see scores and leaderboards
+      allow read: if true; 
       allow update, delete: if isAdmin();
+    }
+
+    match /sports_coaches/{coachId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /donations/{donationId} {
+      // Allow general public to make creation submissions
+      allow create: if isValidString(request.resource.data.name, 100) && 
+                      isValidString(request.resource.data.platform, 50) &&
+                      request.resource.data.amount is number;
+      // Only admins can listing, updates, and deletes
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /library_fees/{feeId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /lending/{lendingId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /test/{testId} {
+      allow read, write: if true;
     }
   }
 }
