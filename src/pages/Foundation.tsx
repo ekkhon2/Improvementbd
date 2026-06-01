@@ -112,50 +112,7 @@ export default function Foundation() {
             </Dialog>
           </div>
 
-          {/* Welcome Message */}
-          <div className="max-w-4xl mx-auto mt-16 text-left bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/10 shadow-xl space-y-6">
-            <div>
-              <h2 className="text-xl font-black text-white mb-2 flex items-center gap-2">
-                <HandHelping className="h-5 w-5 text-accent" />
-                {language === 'bn' ? 'শুভেচ্ছা বার্তা' : 'Welcome Message'}
-              </h2>
-              <p className="text-white/95 leading-relaxed text-sm md:text-base font-semibold">
-                {language === 'bn' 
-                  ? 'আমরা যে সমাজে বেড়ে উঠেছি, মানুষ হিসেবে তার প্রতি আমাদের রয়েছে গভীর দায়িত্ব। এই দায়বদ্ধতা থেকেই অসহায় মানুষের কল্যাণে আমাদের এই পথচলা।'
-                  : 'Empowered by a deep sense of responsibility to our society, we walk together to stand beside those in need.'
-                }
-              </p>
-            </div>
 
-            {/* Platform WhatsApp/Contact Block */}
-            <div className="bg-emerald-600/20 rounded-2xl p-4 md:p-6 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 animate-pulse">
-                  <Phone className="h-6 w-6" />
-                </div>
-                <div className="text-left">
-                  <span className="text-[10px] text-emerald-300 font-bold uppercase tracking-widest block font-mono">Emergency Contact & WhatsApp</span>
-                  <p className="text-lg font-black text-white">
-                    {language === 'bn' ? 'হীরা - 01625230727' : 'Hira - 01625230727'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2 w-full sm:w-auto">
-                <Button 
-                  onClick={() => window.open('https://wa.me/8801625230727', '_blank')}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-white font-black rounded-xl text-xs uppercase px-4 h-10 w-full sm:w-auto"
-                >
-                  WhatsApp Us
-                </Button>
-                <Button 
-                  onClick={() => window.open('tel:+8801625230727')}
-                  className="bg-white text-emerald-600 hover:bg-slate-100 font-black rounded-xl text-xs uppercase px-4 h-10 w-full sm:w-auto border border-emerald-500/10"
-                >
-                  Call Now
-                </Button>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 

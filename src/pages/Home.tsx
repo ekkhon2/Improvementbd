@@ -459,54 +459,67 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section className="py-12 md:py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center gap-10 md:gap-20">
+      <section className="py-16 md:py-28 bg-background relative overflow-hidden">
+        {/* Soft atmospheric background rings */}
+        <div className="absolute top-1/4 -right-32 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -left-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-12 md:gap-24">
             <div className="flex-1 relative">
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-accent rounded-3xl -z-10 opacity-10"></div>
-              <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-primary rounded-3xl -z-10 opacity-10"></div>
-              <img 
-                src="https://picsum.photos/seed/community/800/600" 
-                alt="Community" 
-                className="rounded-[2.5rem] shadow-2xl border-[12px] border-white"
-                referrerPolicy="no-referrer"
-              />
+              <div className="absolute -top-6 -left-6 w-32 h-32 bg-accent/10 rounded-3xl -z-10 blur-xl"></div>
+              <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-slate-900/10 rounded-3xl -z-10 blur-xl"></div>
+              
+              <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-100 relative group">
+                <img 
+                  src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800" 
+                  alt="Community Action" 
+                  className="w-full h-[400px] object-cover transition-all duration-700 group-hover:scale-105"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
             </div>
+
             <div className="flex-1 space-y-10">
               <div className="space-y-6">
-                <h4 className="text-accent font-bold tracking-[0.2em] uppercase text-xs">
+                <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-accent/10 text-accent font-bold text-xs uppercase tracking-widest">
                   {t('about.title')}
-                </h4>
-                <h2 className="text-4xl md:text-5xl font-bold text-primary leading-tight">
+                </span>
+                <h2 className="text-3xl md:text-5xl font-black text-primary leading-tight tracking-tight">
                   {t('about.heading')}
                 </h2>
-                <p className="text-lg text-secondary leading-relaxed">
+                <p className="text-base md:text-lg text-secondary leading-relaxed font-medium">
                   {t('about.description')}
                 </p>
               </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <div className="flex items-start gap-5">
-                  <div className="p-3 rounded-xl bg-red-50 text-danger shadow-sm">
+                <div className="flex items-start gap-5 group">
+                  <div className="p-3.5 rounded-2xl bg-red-50 text-danger shadow-sm group-hover:bg-red-100 transition-colors duration-300">
                     <Heart className="h-6 w-6" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-primary mb-1">{t('about.humanitarian')}</h5>
-                    <p className="text-sm text-secondary leading-relaxed">{t('about.humanitarianDesc')}</p>
+                    <h5 className="font-extrabold text-primary mb-1 text-base">{t('about.humanitarian')}</h5>
+                    <p className="text-sm text-secondary leading-relaxed font-medium">{t('about.humanitarianDesc')}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-5">
-                  <div className="p-3 rounded-xl bg-blue-50 text-accent shadow-sm">
+                <div className="flex items-start gap-5 group">
+                  <div className="p-3.5 rounded-2xl bg-blue-50 text-accent shadow-sm group-hover:bg-blue-100 transition-colors duration-300">
                     <Users className="h-6 w-6" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-primary mb-1">{t('about.unity')}</h5>
-                    <p className="text-sm text-secondary leading-relaxed">{t('about.unityDesc')}</p>
+                    <h5 className="font-extrabold text-primary mb-1 text-base">{t('about.unity')}</h5>
+                    <p className="text-sm text-secondary leading-relaxed font-medium">{t('about.unityDesc')}</p>
                   </div>
                 </div>
               </div>
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-10 h-14 shadow-lg shadow-primary/20 transition-all">
-                {t('common.readMore')}
-              </Button>
+
+              <div className="pt-2">
+                <Button size="lg" className="bg-primary hover:bg-primary/95 text-white px-12 h-14 shadow-xl shadow-primary/20 transition-all font-bold rounded-2xl hover:scale-105 active:scale-95 duration-300">
+                  {t('common.readMore')}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

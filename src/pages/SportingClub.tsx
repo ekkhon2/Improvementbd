@@ -230,7 +230,7 @@ export default function SportingClub() {
               ইমপ্রুভমেন্ট স্পোর্টিং ক্লাব
             </motion.div>
             
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight leading-tight">
               {language === 'bn' ? 'আমাদের বিজয়ী দলের অংশ হোন!' : 'Become Part of Our Winning Team!'}
             </h2>
             
@@ -348,9 +348,11 @@ export default function SportingClub() {
           <div className="text-center mb-16 space-y-6">
             <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight">পূর্ণাঙ্গ কমিটি (Full Committee)</h2>
             <div className="w-24 h-1.5 bg-accent mx-auto rounded-full"></div>
-            <p className="text-secondary font-medium max-w-2xl mx-auto sm:text-base text-xs">ইমপ্রুভমেন্ট স্পোর্টিং ক্লাবের মূল চালিকাশক্তি। একতা এবং নিষ্ঠার সাথে যারা ক্লাবের উন্নয়নে কাজ করছেন।</p>
+            <p className="text-secondary font-medium max-w-2xl mx-auto sm:text-base text-xs">
+              ইমপ্রুভমেন্ট স্পোর্টিং ক্লাবের মূল চালিকাশক্তি। একতা এবং নিষ্ঠার সাথে যারা ক্লাবের উন্নয়নে কাজ করছেন।
+            </p>
             
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-center pt-2 pb-6">
               <Button 
                 onClick={() => navigate('/sporting-club/players')}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold h-14 px-8 rounded-full shadow-lg shadow-emerald-500/20 group transition-all duration-300 hover:scale-105"
@@ -361,7 +363,7 @@ export default function SportingClub() {
             </div>
 
             {/* Our Teams Sliding Segment (Point 8) */}
-            <div className="pt-12 max-w-5xl mx-auto space-y-6">
+            <div className="pt-8 max-w-5xl mx-auto space-y-6">
               <div className="flex items-center justify-center gap-2">
                 <div className="h-0.5 w-8 bg-slate-200"></div>
                 <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest font-mono">
@@ -370,42 +372,80 @@ export default function SportingClub() {
                 <div className="h-0.5 w-8 bg-slate-200"></div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {[
-                  {
-                    name: language === 'bn' ? 'ইমপ্রুভমেন্ট ক্রিকেট একাডেমি' : 'Improvement Cricket Academy',
-                    logo: 'https://images.unsplash.com/photo-1540747737956-378724044302?w=150&auto=format&fit=crop&q=60'
-                  },
-                  {
-                    name: language === 'bn' ? 'ইমপ্রুভমেন্ট ফুটবল ক্লাব' : 'Improvement Football Club',
-                    logo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=150&auto=format&fit=crop&q=60'
-                  },
-                  {
-                    name: language === 'bn' ? 'ইমপ্রুভমেন্ট ই-স্পোর্টস নিনজাস' : 'Improvement Esports Ninjas',
-                    logo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&auto=format&fit=crop&q=60'
-                  },
-                  {
-                    name: language === 'bn' ? 'ইমপ্রুভমেন্ট অ্যাথলেটিক ক্লাব' : 'Improvement Athletic Club',
-                    logo: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=150&auto=format&fit=crop&q=60'
-                  }
-                ].map((team, idx) => (
-                  <div 
-                    key={idx} 
-                    className="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all duration-300 flex flex-col items-center text-center space-y-3 group"
-                  >
-                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-white shrink-0">
-                      <img 
-                        src={team.logo} 
-                        alt={team.name} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        referrerPolicy="no-referrer"
-                      />
+              {/* Slider slideshow */}
+              <div className="relative group/teams px-8">
+                <div 
+                  id="teams-track"
+                  className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide snap-x scroll-smooth"
+                  style={{
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                  }}
+                >
+                  {[
+                    {
+                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ক্রিকেট একাডেমি' : 'Improvement Cricket Academy',
+                      logo: 'https://images.unsplash.com/photo-1540747737956-378724044302?w=150&auto=format&fit=crop&q=60'
+                    },
+                    {
+                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ফুটবল ক্লাব' : 'Improvement Football Club',
+                      logo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=150&auto=format&fit=crop&q=60'
+                    },
+                    {
+                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ই-স্পোর্টস নিনজাস' : 'Improvement Esports Ninjas',
+                      logo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&auto=format&fit=crop&q=60'
+                    },
+                    {
+                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট অ্যাথলেটিক ক্লাব' : 'Improvement Athletic Club',
+                      logo: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=150&auto=format&fit=crop&q=60'
+                    },
+                    {
+                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ব্যাডমিন্টন কিংস' : 'Improvement Badminton Kings',
+                      logo: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=150&auto=format&fit=crop&q=60'
+                    },
+                    {
+                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ভলিবল ওয়ারিয়র্স' : 'Improvement Volleyball Warriors',
+                      logo: 'https://images.unsplash.com/photo-1592656094267-764a4515757d?w=150&auto=format&fit=crop&q=60'
+                    }
+                  ].map((team, idx) => (
+                    <div 
+                      key={idx} 
+                      className="w-[180px] xs:w-[200px] sm:w-[220px] shrink-0 snap-start bg-slate-50/80 rounded-2xl p-4 border border-slate-100/70 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all duration-300 flex flex-col items-center text-center space-y-3 group/card"
+                    >
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-white shrink-0">
+                        <img 
+                          src={team.logo} 
+                          alt={team.name} 
+                          className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-300"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                      <p className="text-xs font-black text-slate-800 leading-tight group-hover/card:text-emerald-700 transition-colors">
+                        {team.name}
+                      </p>
                     </div>
-                    <p className="text-xs font-black text-slate-800 leading-tight group-hover:text-emerald-700 transition-colors">
-                      {team.name}
-                    </p>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
+                {/* Left & Right Sliding Buttons */}
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('teams-track');
+                    if (el) el.scrollLeft -= 240;
+                  }}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border border-slate-200/80 shadow-md text-slate-700 hover:bg-slate-50 flex items-center justify-center opacity-0 group-hover/teams:opacity-100 transition-opacity"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('teams-track');
+                    if (el) el.scrollLeft += 240;
+                  }}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border border-slate-200/80 shadow-md text-slate-700 hover:bg-slate-50 flex items-center justify-center opacity-0 group-hover/teams:opacity-100 transition-opacity"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
               </div>
             </div>
           </div>
@@ -538,7 +578,7 @@ export default function SportingClub() {
                     </h3>
                     <div className="h-1.5 w-20 bg-accent rounded-full mx-auto md:mx-0" />
                   </div>
-                  <p className="text-slate-600 leading-relaxed text-lg md:text-xl font-medium whitespace-pre-line">
+                  <p className="text-slate-600 leading-relaxed text-sm md:text-base font-medium whitespace-pre-line">
                     {language === 'bn' 
                       ? `মনের পরিচর্যার অনেকগুলো পদ্ধতির একটি হলো খেলাধুলা। মনের সঠিক পরিচর্যা অপরাধপ্রবণতা কমায়, আবেগ ও যুক্তির মধ্যে সমন্বয় সাধন করে বাস্তবতাকে মেনে নিতে সহায়তা করে। শিশুরা যদি খেলাধুলার সঠিক পরিবেশ না পায় তাহলে বিকল্প হিসেবে জায়গা করে নিবে।
 
