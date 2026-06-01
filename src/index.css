@@ -102,12 +102,6 @@
     background-color: white !important;
   }
 
-  button[aria-haspopup="listbox"],
-  button[aria-haspopup="dialog"],
-  button[aria-haspopup="menu"] {
-    background-color: white !important;
-  }
-
   [role="dialog"],
   [role="popover"],
   [role="menu"],
