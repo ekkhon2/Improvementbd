@@ -52,7 +52,7 @@ export default function Shop() {
 
   const handleBuy = (product: Product) => {
     const message = encodeURIComponent(`Hello Improvement BD! I want to buy ${product.name} (Price: ৳${product.price}). Is it available?`);
-    window.open(`https://wa.me/8801819417935?text=${message}`, '_blank');
+    window.open(`https://wa.me/8801722338719?text=${message}`, '_blank');
   };
 
   return (

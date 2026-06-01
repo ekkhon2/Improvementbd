@@ -20,7 +20,7 @@ export const PLATFORM_CONTACTS: Record<string, ContactInfo> = {
   'academic-care': { nameBn: 'ইমাম', nameEn: 'Emam', phone: '01518975474' },
   'it-education': { nameBn: 'নাদিম', nameEn: 'Nadim', phone: '01711157183' },
   library: { nameBn: 'ইমাম', nameEn: 'Emam', phone: '01518975474' },
-  kidscare: { nameBn: 'নাদিম', nameEn: 'Nadim', phone: '01819417935' },
+  kidscare: { nameBn: 'আল আমিন', nameEn: 'Al Amin', phone: '01722338719' },
   rehabilitation: { nameBn: 'আশিক', nameEn: 'Ashik', phone: '01981159811' },
 };
 

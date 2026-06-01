@@ -69,9 +69,9 @@ const PLATFORM_CONTACTS: Record<string, ContactInfo> = {
     titleEn: 'Library',
   },
   'kidscare': {
-    nameBn: 'নাদিম',
-    nameEn: 'Nadim',
-    phone: '01819417935',
+    nameBn: 'আল আমিন',
+    nameEn: 'Al Amin',
+    phone: '01722338719',
     titleBn: 'কিডস কেয়ার (Kids Care)',
     titleEn: 'Kids Care',
   },
