@@ -10,6 +10,7 @@ import { Droplets, Search, UserPlus, Phone, MapPin, Calendar, CheckCircle2, XCir
 import { Label } from '@/components/ui/label';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
+import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 
@@ -245,6 +246,8 @@ Any healthy individual between 18 and 60 years old can safely donate blood every
           </div>
         </div>
       </section>
+
+      <ContactSection platform="blood-bank" />
 
       <GallerySection platform="blood-bank" />
     </div>

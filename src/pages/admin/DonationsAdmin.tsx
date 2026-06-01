@@ -28,6 +28,7 @@ export default function DonationsAdmin() {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [filterPlatform, setFilterPlatform] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterPaymentType, setFilterPaymentType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function DonationsAdmin() {
     return () => unsubscribe();
   }, []);
 
-  const handleUpdateStatus = async (id: string, nextStatus: 'approved' | 'rejected') => {
+  const handleUpdateStatus = async (id: string, nextStatus: 'pending' | 'approved' | 'rejected') => {
     try {
       await updateDoc(doc(db, 'donations', id), {
         status: nextStatus
@@ -102,6 +103,9 @@ export default function DonationsAdmin() {
   const filteredDonations = donations.filter(d => {
     const matchesPlatform = filterPlatform === 'all' || d.platform === filterPlatform;
     const matchesStatus = filterStatus === 'all' || d.status === filterStatus;
+    const matchesPaymentType = filterPaymentType === 'all' || 
+      (filterPaymentType === 'special-mail' && d.paymentType === 'special-meal') ||
+      (filterPaymentType === 'regular' && d.paymentType !== 'special-meal');
     
     const term = searchQuery.toLowerCase().trim();
     const matchesSearch = !term || 
@@ -112,7 +116,7 @@ export default function DonationsAdmin() {
       (d.platformName || '').toLowerCase().includes(term) ||
       String(d.amount).includes(term);
 
-    return matchesPlatform && matchesStatus && matchesSearch;
+    return matchesPlatform && matchesStatus && matchesPaymentType && matchesSearch;
   });
 
   const STATUS_RANK: Record<string, number> = {
@@ -216,6 +220,17 @@ export default function DonationsAdmin() {
                 <SelectItem value="rejected">Rejected</SelectItem>
               </SelectContent>
             </Select>
+
+            <Select value={filterPaymentType} onValueChange={setFilterPaymentType}>
+              <SelectTrigger className="w-48 bg-slate-50 border-slate-100 rounded-xl h-11 text-xs font-bold">
+                <SelectValue placeholder="Donation Type" />
+              </SelectTrigger>
+              <SelectContent className="bg-white rounded-xl">
+                <SelectItem value="all">All Donations (সব ধরণ)</SelectItem>
+                <SelectItem value="regular">Regular (সাধারণ অনুদান)</SelectItem>
+                <SelectItem value="special-mail">Special Meal (স্পেশাল মিল)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -258,6 +273,15 @@ export default function DonationsAdmin() {
                       <Badge className="bg-slate-100 text-slate-700 capitalize font-black rounded-lg px-2 py-0.5 border-none text-[10px]">
                         {donation.platformName || donation.platform}
                       </Badge>
+                      {donation.paymentType === 'special-meal' ? (
+                        <Badge className="bg-amber-100 text-amber-800 font-black rounded-lg px-2 py-0.5 border-none text-[10px] tracking-wide">
+                          🍲 Special Meal (স্পেশাল মিল)
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-sky-100 text-sky-800 font-black rounded-lg px-2 py-0.5 border-none text-[10px] tracking-wide">
+                          🎁 General Donation (সাধারণ অনুদান)
+                        </Badge>
+                      )}
                       <Badge className="bg-rose-50 text-[#8b0000] font-black rounded-lg px-2 py-0.5 border-none text-[10px] tracking-wide">
                         Verified Member Payment
                       </Badge>
@@ -318,28 +342,41 @@ export default function DonationsAdmin() {
                     </div>
 
                     <div className="flex gap-1.5 border-l pl-4 border-slate-100">
-                      {donation.status === 'pending' && (
-                        <>
+                      <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100/80">
+                        {donation.status !== 'approved' && (
                           <Button 
                             size="icon" 
                             variant="ghost"
                             onClick={() => handleUpdateStatus(donation.id, 'approved')}
-                            className="h-10 w-10 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-xl"
+                            className="h-9 w-9 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg shrink-0"
                             title="Approve Transaction"
                           >
-                            <Check className="h-5 w-5" />
+                            <Check className="h-4 w-4" />
                           </Button>
+                        )}
+                        {donation.status !== 'rejected' && (
                           <Button 
                             size="icon" 
                             variant="ghost"
                             onClick={() => handleUpdateStatus(donation.id, 'rejected')}
-                            className="h-10 w-10 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl"
+                            className="h-9 w-9 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg shrink-0"
                             title="Reject Transaction"
                           >
-                            <X className="h-5 w-5" />
+                            <X className="h-4 w-4" />
                           </Button>
-                        </>
-                      )}
+                        )}
+                        {(donation.status === 'approved' || donation.status === 'rejected') && (
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => handleUpdateStatus(donation.id, 'pending')}
+                            className="h-8 px-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all"
+                            title="Reset to Pending"
+                          >
+                            Reset
+                          </Button>
+                        )}
+                      </div>
                       <Button 
                         size="icon" 
                         variant="ghost"

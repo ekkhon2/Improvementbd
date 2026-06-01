@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
+import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
 import { collection, query, onSnapshot, where, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
@@ -528,6 +529,8 @@ export default function FoodBank() {
           </div>
         </div>
       </section>
+
+      <ContactSection platform="food-bank" />
 
       <GallerySection platform="food-bank" />
     </div>

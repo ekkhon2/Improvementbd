@@ -10,6 +10,7 @@ import { Library as LibraryIcon, Search, BookOpen, UserPlus, Clock, ArrowRight, 
 import { cn } from '@/lib/utils';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
+import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
@@ -282,6 +283,8 @@ export default function Library() {
           </div>
         </div>
       </section>
+
+      <ContactSection platform="library" />
 
       <GallerySection platform="library" />
     </div>

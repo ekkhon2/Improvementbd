@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '@/src/context/LanguageContext';
 import GallerySection from '@/src/components/GallerySection';
+import ContactSection from '@/src/components/ContactSection';
 import DonationModal from '@/src/components/DonationModal';
 import { Baby, Stars, Heart } from 'lucide-react';
 
@@ -59,6 +60,9 @@ We believe every child is like a flower, whose proper care will lead them to a b
           </div>
         </div>
       </section>
+
+      {/* Contact Section */}
+      <ContactSection platform="kidscare" />
 
       {/* Gallery Section */}
       <GallerySection platform="kidscare" />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import GallerySection from '../components/GallerySection';
+import ContactSection from '../components/ContactSection';
 import DonationModal from '../components/DonationModal';
 import { Heart, Coins, Gift, ShieldAlert } from 'lucide-react';
 
@@ -63,6 +64,9 @@ This fund operates purely on your voluntary charity, Sadakah, and compassionate 
           </div>
         </div>
       </section>
+
+      {/* Contact Section */}
+      <ContactSection platform="poor-fund" />
 
       {/* Gallery Section */}
       <div className="container mx-auto px-4 py-16">

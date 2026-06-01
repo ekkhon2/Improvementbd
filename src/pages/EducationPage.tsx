@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Video, ChevronLeft, ChevronRight, CheckCircle2, Keyboard, Trophy, BookOpen } from 'lucide-react';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
+import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
 import { collection, query, onSnapshot, where, orderBy } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
@@ -298,6 +299,8 @@ export default function EducationPage({ platform }: { platform: 'it-education' |
           )}
         </div>
       </section>
+
+      <ContactSection platform={platform === 'academic-care' ? 'academy' : 'it-education'} />
 
       <GallerySection platform={platform} />
     </div>

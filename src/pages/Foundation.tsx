@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
+import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
 import { collection, query, onSnapshot, where } from 'firebase/firestore';
 
@@ -384,6 +385,8 @@ export default function Foundation() {
           )}
         </div>
       </section>
+
+      <ContactSection platform="foundation" />
 
       <GallerySection platform="foundation" />
     </div>

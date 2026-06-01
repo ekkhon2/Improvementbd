@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '@/src/context/LanguageContext';
 import GallerySection from '@/src/components/GallerySection';
+import ContactSection from '@/src/components/ContactSection';
 import DonationModal from '@/src/components/DonationModal';
 import { Heart, Home, ShieldCheck } from 'lucide-react';
 
@@ -51,6 +52,9 @@ Our main objective is to bring smiles to the faces of neglected and lonely senio
           </div>
         </div>
       </section>
+
+      {/* Contact Section */}
+      <ContactSection platform="rehabilitation" />
 
       {/* Gallery Section */}
       <GallerySection platform="rehabilitation" />

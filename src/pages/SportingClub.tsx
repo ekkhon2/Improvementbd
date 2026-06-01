@@ -7,6 +7,7 @@ import { Trophy, Users, HandHelping, Gamepad2, ChevronLeft, ChevronRight, Phone,
 import { motion, AnimatePresence } from 'motion/react';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
+import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
 import { collection, query, onSnapshot, where, orderBy } from 'firebase/firestore';
 
@@ -373,6 +374,8 @@ export default function SportingClub() {
           </div>
         </div>
       </section>
+
+      <ContactSection platform="sporting-club" />
 
       <GallerySection platform="sporting-club" />
 
