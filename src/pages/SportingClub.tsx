@@ -11,6 +11,7 @@ import GallerySection from '@/src/components/GallerySection';
 import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
 import { collection, query, onSnapshot, where, orderBy } from 'firebase/firestore';
+import { Badge } from '@/components/ui/badge';
 
 interface Member {
   id: string;
@@ -112,103 +113,92 @@ export default function SportingClub() {
   return (
     <div className="min-h-screen">
       {/* Banner Slider */}
-      <section className="relative h-[300px] md:h-[600px] overflow-hidden bg-black">
-        {banners.length > 0 ? (
-          <>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentBanner}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="absolute inset-0"
-              >
-                <div 
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${banners[currentBanner]?.image})` }}
-                >
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-center px-4">
-                    <div className="max-w-3xl">
-                      <div className="inline-flex mb-4 md:mb-8">
-                        <img 
-                          src="https://i.ibb.co.com/qY81XHDH/Improvement-sporting-club.jpg" 
-                          alt="Improvement Sporting Club Logo" 
-                          className="h-12 w-12 md:h-20 md:w-20 rounded-xl md:rounded-2xl object-contain bg-white p-1.5 border-2 border-accent/30 shadow-2xl shadow-accent/20"
-                          referrerPolicy="no-referrer"
-                        />
+      <section className="py-6 md:py-10 bg-slate-50/50">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="relative h-[250px] sm:h-[350px] md:h-[450px] overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-black shadow-xl">
+            {banners.length > 0 ? (
+              <>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentBanner}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute inset-0"
+                  >
+                    <div className="absolute inset-0 bg-slate-950 overflow-hidden">
+                      {/* Blurred Background layer to fill empty side-bars */}
+                      <img 
+                        src={banners[currentBanner]?.image} 
+                        alt="" 
+                        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+                        referrerPolicy="no-referrer"
+                      />
+                      {/* Primary un-cropped layer */}
+                      <img 
+                        src={banners[currentBanner]?.image} 
+                        alt={banners[currentBanner]?.title} 
+                        className="absolute inset-0 w-full h-full object-contain z-10"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-0 bg-black/10 z-20 flex items-end justify-center pb-8 px-4">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" className="bg-accent text-white hover:bg-accent/95 px-8 h-12 text-sm font-black rounded-xl shadow-lg shadow-accent/35 hover:scale-[1.02] active:scale-95 transition-all">
+                              {language === 'bn' ? 'এখনই যোগ দিন' : 'Join Now'}
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-none bg-white rounded-3xl">
+                            <MemberForm platform="sporting-club" platformName="Improvement Sporting Club" />
+                          </DialogContent>
+                        </Dialog>
                       </div>
-                      <motion.h1 
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-2xl md:text-4xl font-black text-white mb-2 md:mb-4"
-                      >
-                        {banners[currentBanner]?.title}
-                      </motion.h1>
-                      <motion.p 
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                        className="text-xs md:text-lg text-white/80 mb-6 md:mb-8"
-                      >
-                        {banners[currentBanner]?.subtitle}
-                      </motion.p>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button size="lg" className="bg-accent text-white hover:bg-accent/90 px-8 h-12 md:h-14 shadow-lg shadow-accent/20 font-bold rounded-xl">
-                            {language === 'bn' ? 'এখনই যোগ দিন' : 'Join Now'}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-none bg-white rounded-3xl">
-                          <MemberForm platform="sporting-club" platformName="Improvement Sporting Club" />
-                        </DialogContent>
-                      </Dialog>
                     </div>
-                  </div>
+                  </motion.div>
+                </AnimatePresence>
+
+                <button 
+                  onClick={prevBanner}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/30 hover:bg-black/55 text-white transition-all hover:scale-105"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button 
+                  onClick={nextBanner}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/30 hover:bg-black/55 text-white transition-all hover:scale-105"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {banners.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentBanner(i)}
+                      className={`w-2 h-2 rounded-full transition-all ${currentBanner === i ? 'bg-accent w-6' : 'bg-white/40'}`}
+                    />
+                  ))}
                 </div>
-              </motion.div>
-            </AnimatePresence>
-
-            <button 
-              onClick={prevBanner}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-            <button 
-              onClick={nextBanner}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
-
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-              {banners.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentBanner(i)}
-                  className={`w-3 h-3 rounded-full transition-all ${currentBanner === i ? 'bg-accent w-8' : 'bg-white/50'}`}
-                />
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
-            <div className="text-center space-y-4">
-              <div className="inline-flex mb-4">
-                <img 
-                  src="https://i.ibb.co.com/qY81XHDH/Improvement-sporting-club.jpg" 
-                  alt="Improvement Sporting Club Logo" 
-                  className="h-20 w-20 rounded-2xl object-contain bg-white p-1.5 border-2 border-accent/30 shadow-2xl shadow-accent/20"
-                  referrerPolicy="no-referrer"
-                />
+              </>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
+                <div className="text-center space-y-4">
+                  <div className="inline-flex mb-4">
+                    <img 
+                      src="https://i.ibb.co.com/qY81XHDH/Improvement-sporting-club.jpg" 
+                      alt="Improvement Sporting Club Logo" 
+                      className="h-16 w-16 rounded-xl object-contain bg-white p-1 border-2 border-accent/20"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <h2 className="text-xl font-bold text-white">Welcome to Sporting Club</h2>
+                  <p className="text-white/60 text-sm">Loading exciting events...</p>
+                </div>
               </div>
-              <h2 className="text-2xl font-bold text-white">Welcome to Sporting Club</h2>
-              <p className="text-white/60">Loading exciting events...</p>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </section>
       
       {/* Registration Section */}
@@ -298,8 +288,9 @@ export default function SportingClub() {
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 {coaches.map((coach) => (
-                  <div key={coach.id} className="w-[280px] sm:w-[320px] shrink-0 snap-start bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-[420px]">
-                    <div className="aspect-[4/5] bg-slate-100 relative overflow-hidden shrink-0">
+                  <div key={coach.id} className="w-[280px] sm:w-[310px] shrink-0 snap-start bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-lg hover:shadow-xl transition-all duration-300 p-6 flex flex-col items-center text-center space-y-4">
+                    {/* Passport-size photo frame */}
+                    <div className="w-32 h-40 bg-slate-100 rounded-2xl overflow-hidden border-2 border-slate-200 shadow-inner shrink-0 relative">
                       <img 
                         src={coach.photoURL || 'https://images.unsplash.com/photo-1542156822-6924d1a71aba?w=400&auto=format&fit=crop&q=60'} 
                         alt={coach.name} 
@@ -307,25 +298,31 @@ export default function SportingClub() {
                         referrerPolicy="no-referrer"
                       />
                     </div>
-                    <div className="p-5 flex-grow flex flex-col justify-between">
-                      <div className="space-y-1.5">
-                        <p className="text-[10px] font-black tracking-widest text-emerald-600 uppercase font-mono">{coach.team}</p>
-                        <h3 className="text-base font-black text-primary leading-tight">{coach.name}</h3>
-                        <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
-                          <span className="font-bold text-slate-700">Skill: </span>
+                    {/* Coach details and action */}
+                    <div className="flex-grow flex flex-col justify-between w-full">
+                      <div className="space-y-2">
+                        <Badge variant="outline" className="text-[10px] font-black tracking-widest text-[#047857] bg-emerald-50 border-emerald-200 uppercase font-mono px-2 py-0.5">
+                          {coach.team}
+                        </Badge>
+                        <h3 className="text-lg font-black text-primary leading-tight">
+                          {coach.name}
+                        </h3>
+                        <p className="text-xs text-slate-600 font-semibold leading-relaxed">
+                          <span className="font-extrabold text-slate-800">Speciality: </span>
                           {coach.specialSkill}
                         </p>
                       </div>
+                      
                       {coach.fbId && (
-                        <div className="pt-3">
+                        <div className="pt-4">
                           <a 
                             href={coach.fbId} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 bg-slate-950 hover:bg-emerald-600 text-white text-[11px] font-black rounded-xl transition-all uppercase tracking-wider shadow-sm font-mono"
+                            className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-slate-900 hover:bg-emerald-600 hover:text-white text-slate-200 hover:text-white text-[11px] font-black rounded-xl transition-all uppercase tracking-wider shadow-sm font-mono"
                           >
                             <Facebook className="h-3.5 w-3.5 fill-current" />
-                            {language === 'bn' ? 'ফেসবুক আইডি' : 'Facebook ID'}
+                            {language === 'bn' ? 'যোগাযোগ করুন' : 'Contact Coach'}
                           </a>
                         </div>
                       )}

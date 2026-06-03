@@ -236,68 +236,83 @@ export default function Home() {
             </div>
           </div>
         ) : bannersToDisplay.length > 0 ? (
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay, EffectFade]}
-            effect="fade"
-            navigation
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 5000, disableOnInteraction: false }}
-            loop={bannersToDisplay.length > 1}
-            className="h-[500px] md:h-[700px] w-full"
-          >
-            {bannersToDisplay.map((banner) => (
-              <SwiperSlide key={banner.id}>
-                <div className="relative w-full h-full">
-                  <img 
-                    src={banner.image} 
-                    alt={banner.title} 
-                    className="absolute inset-0 w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${banner.id}/1920/1080`;
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-center px-4">
-                    <div className="max-w-4xl">
-                      {banner.title && (
-                        <motion.h1 
-                          initial={{ opacity: 0, y: 30 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.8 }}
-                          className="text-4xl md:text-7xl font-black text-white mb-6 leading-tight drop-shadow-2xl"
-                        >
-                          {banner.title}
-                        </motion.h1>
-                      )}
-                      {banner.subtitle && (
-                        <motion.p 
-                          initial={{ opacity: 0, y: 30 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.8, delay: 0.2 }}
-                          className="text-lg md:text-2xl text-white/90 mb-10 font-medium drop-shadow-lg"
-                        >
-                          {banner.subtitle}
-                        </motion.p>
-                      )}
-                      {banner.link && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.5, delay: 0.4 }}
-                        >
-                          <Link to={banner.link}>
-                            <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-10 h-16 text-xl shadow-2xl shadow-accent/20 transition-all font-bold rounded-2xl">
-                              {t('common.viewDetails')}
-                            </Button>
-                          </Link>
-                        </motion.div>
-                      )}
+          <div className="py-6 md:py-10 bg-slate-50/50">
+            <div className="container mx-auto px-4 max-w-6xl">
+              <Swiper
+                modules={[Navigation, Pagination, Autoplay, EffectFade]}
+                effect="fade"
+                navigation
+                pagination={{ clickable: true }}
+                autoplay={{ delay: 5000, disableOnInteraction: false }}
+                loop={bannersToDisplay.length > 1}
+                className="h-[300px] sm:h-[400px] md:h-[460px] w-full rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-xl"
+              >
+                {bannersToDisplay.map((banner) => (
+                  <SwiperSlide key={banner.id}>
+                    <div className="relative w-full h-full bg-slate-950 overflow-hidden">
+                      {/* Blurred Background layer to fill empty side-bars on mismatched aspect ratios */}
+                      <img 
+                        src={banner.image} 
+                        alt="" 
+                        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${banner.id}/1920/1080`;
+                        }}
+                      />
+                      {/* Primary un-cropped layer in center */}
+                      <img 
+                        src={banner.image} 
+                        alt={banner.title} 
+                        className="absolute inset-0 w-full h-full object-contain z-10"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${banner.id}/1920/1080`;
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/45 flex items-center justify-center text-center px-4">
+                        <div className="max-w-3xl">
+                          {banner.title && (
+                            <motion.h1 
+                              initial={{ opacity: 0, y: 30 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.8 }}
+                              className="text-2xl sm:text-4xl md:text-5xl font-black text-white mb-3 md:mb-4 leading-tight drop-shadow-2xl"
+                            >
+                              {banner.title}
+                            </motion.h1>
+                          )}
+                          {banner.subtitle && (
+                            <motion.p 
+                              initial={{ opacity: 0, y: 30 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.8, delay: 0.2 }}
+                              className="text-xs sm:text-base md:text-lg text-white/95 mb-6 md:mb-8 font-semibold drop-shadow-lg max-w-2xl mx-auto"
+                            >
+                              {banner.subtitle}
+                            </motion.p>
+                          )}
+                          {banner.link && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              whileInView={{ opacity: 1, scale: 1 }}
+                              transition={{ duration: 0.5, delay: 0.4 }}
+                            >
+                              <Link to={banner.link}>
+                                <Button size="sm" className="sm:size-lg bg-accent hover:bg-accent/90 text-white px-6 sm:px-8 h-10 sm:h-12 text-xs sm:text-sm shadow-xl shadow-accent/20 transition-all font-black rounded-xl md:rounded-2xl">
+                                  {t('common.viewDetails')}
+                                </Button>
+                              </Link>
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          </div>
         ) : (
           <div className="py-24 md:py-32">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
