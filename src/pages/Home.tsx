@@ -12,7 +12,8 @@ import {
   BookOpen
 } from 'lucide-react';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
-import { doc, onSnapshot, collection, query, orderBy } from 'firebase/firestore';
+import { doc, collection, query, orderBy } from 'firebase/firestore';
+import { useDBCache } from '@/src/context/DBCacheContext';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
 import { useSEO } from '@/src/hooks/useSEO';
@@ -123,42 +124,43 @@ export default function Home() {
   const [banners, setBanners] = useState<any[]>([]);
   const [bannerMode, setBannerMode] = useState<'auto' | 'video' | 'carousel'>('auto');
 
+  const { getCachedCollection, getCachedDoc } = useDBCache();
+
   useEffect(() => {
-    // Fetch Banners
-    const bannersQuery = query(collection(db, 'banners'), orderBy('order', 'asc'));
-    const unsubBanners = onSnapshot(bannersQuery, (snap) => {
-      setBanners(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'banners');
-    });
-
-    const unsubStats = onSnapshot(doc(db, 'stats', 'totals'), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setStats({
-          members: data.members || 0,
-          donors: data.donors || 0,
-          books: data.books || 0,
-          recipients: data.recipients || 500
-        });
+    const fetchHomeData = async () => {
+      try {
+        const bannersQuery = query(collection(db, 'banners'), orderBy('order', 'asc'));
+        const cachedBanners = await getCachedCollection<any>('banners', bannersQuery, 5 * 60 * 1000);
+        setBanners(cachedBanners);
+      } catch (error) {
+        console.warn('Failed to load banners cache:', error);
       }
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'stats/totals');
-    });
 
-    const unsubSettings = onSnapshot(doc(db, 'settings', 'banners'), (snap) => {
-      if (snap.exists()) {
-        setBannerMode(snap.data().mode || 'auto');
+      try {
+        const cachedStats = await getCachedDoc<any>('stats/totals', 2 * 60 * 1000);
+        if (cachedStats) {
+          setStats({
+            members: cachedStats.members || 0,
+            donors: cachedStats.donors || 0,
+            books: cachedStats.books || 0,
+            recipients: cachedStats.recipients || 500
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to load stats cache:', error);
       }
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'settings/banners');
-    });
 
-    return () => {
-      unsubBanners();
-      unsubStats();
-      unsubSettings();
+      try {
+        const cachedSettings = await getCachedDoc<any>('settings/banners', 5 * 60 * 1000);
+        if (cachedSettings) {
+          setBannerMode(cachedSettings.mode || 'auto');
+        }
+      } catch (error) {
+        console.warn('Failed to load banner setting cache:', error);
+      }
     };
+
+    fetchHomeData();
   }, []);
 
   const getYoutubeId = (url: string) => {

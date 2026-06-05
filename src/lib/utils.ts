@@ -36,3 +36,42 @@ export function getPlatformContact(platform: string): ContactInfo {
   return PLATFORM_CONTACTS[key] || { nameBn: 'হীরা', nameEn: 'Hira', phone: '01625230727' };
 }
 
+export function formatImageUrl(url: any): string {
+  if (!url || typeof url !== 'string') {
+    return '';
+  }
+
+  const trimmed = url.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  // 1. Convert ibb.co sharing links to direct i.ibb.co.com links
+  // Example: https://ibb.co/gwhSryL -> https://i.ibb.co.com/gwhSryL/image.jpg
+  // Or: https://ibb.co/v6jNcH6c -> https://i.ibb.co.com/v6jNcH6c/image.jpg
+  const ibbRegex = /^https?:\/\/(?:www\.)?ibb\.co\/([a-zA-Z0-9]+)$/i;
+  const ibbMatch = trimmed.match(ibbRegex);
+  if (ibbMatch) {
+    return `https://i.ibb.co.com/${ibbMatch[1]}/image.jpg`;
+  }
+
+  // 2. Convert Google Drive sharing links to direct download/display links
+  // Format 1: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+  const driveRegex1 = /^https?:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i;
+  const driveMatch1 = trimmed.match(driveRegex1);
+  if (driveMatch1) {
+    return `https://lh3.googleusercontent.com/d/${driveMatch1[1]}`;
+  }
+
+  // Format 2: https://drive.google.com/open?id=FILE_ID
+  const driveRegex2 = /[?&]id=([a-zA-Z0-9_-]+)/i;
+  if (trimmed.includes('drive.google.com')) {
+    const driveMatch2 = trimmed.match(driveRegex2);
+    if (driveMatch2) {
+      return `https://lh3.googleusercontent.com/d/${driveMatch2[1]}`;
+    }
+  }
+
+  return trimmed;
+}
+

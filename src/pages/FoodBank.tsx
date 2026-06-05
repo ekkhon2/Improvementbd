@@ -12,7 +12,8 @@ import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
 import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
-import { collection, query, onSnapshot, where, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useDBCache } from '@/src/context/DBCacheContext';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface Member {
@@ -53,42 +54,43 @@ export default function FoodBank() {
   const [txId, setTxId] = useState('');
   const [formError, setFormError] = useState('');
 
+  const { getCachedCollection } = useDBCache();
+
   useEffect(() => {
-    const q = query(
-      collection(db, 'members'), 
-      where('platform', '==', 'food-bank'),
-      where('status', '==', 'approved')
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Member[];
-      setMembers(list);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'members');
-    });
-    return () => unsubscribe();
+    const fetchMembers = async () => {
+      try {
+        const q = query(
+          collection(db, 'members'), 
+          where('platform', '==', 'food-bank'),
+          where('status', '==', 'approved')
+        );
+        const list = await getCachedCollection<Member>('members', q, 5 * 60 * 1000);
+        setMembers(list);
+      } catch (error) {
+        console.warn('Failed to load members cache:', error);
+      }
+    };
+
+    fetchMembers();
   }, []);
 
   useEffect(() => {
-    const q = collection(db, 'food_donation_menu');
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as MenuItem[];
-      // Client-side sort fallback
-      list.sort((a, b) => {
-        const timeA = (a as any).createdAt?.seconds || 0;
-        const timeB = (b as any).createdAt?.seconds || 0;
-        return timeB - timeA;
-      });
-      setMenuItems(list);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'food_donation_menu');
-    });
-    return () => unsubscribe();
+    const fetchMenu = async () => {
+      try {
+        const q = query(collection(db, 'food_donation_menu'));
+        const list = await getCachedCollection<MenuItem>('food_donation_menu', q, 10 * 60 * 1000);
+        const sorted = [...list].sort((a, b) => {
+          const timeA = (a as any).createdAt?.seconds || 0;
+          const timeB = (b as any).createdAt?.seconds || 0;
+          return timeB - timeA;
+        });
+        setMenuItems(sorted);
+      } catch (error) {
+        console.warn('Failed to load food donation menu cache:', error);
+      }
+    };
+
+    fetchMenu();
   }, []);
 
   const addDonationRow = () => {

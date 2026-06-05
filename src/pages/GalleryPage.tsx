@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'motion/react';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, where, orderBy } from 'firebase/firestore';
+import { useDBCache } from '@/src/context/DBCacheContext';
 import { ChevronLeft, Image as ImageIcon, PlayCircle } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { formatImageUrl } from '@/src/lib/utils';
 
 interface GalleryPost {
   id: string;
@@ -30,29 +32,43 @@ export default function GalleryPage() {
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<GalleryPost | null>(null);
 
+  const getPostImage = (post: GalleryPost) => {
+    const foundImg = (post.images && post.images.length > 0) ? post.images.find(img => img && img.trim() !== '') : post.image;
+    return formatImageUrl(foundImg) || `https://picsum.photos/seed/${post.id}/800/600`;
+  };
+
+  const getDialogImages = (post: GalleryPost) => {
+    const list = post.images && post.images.length > 0 ? post.images : [post.image];
+    const filtered = list.map(img => formatImageUrl(img)).filter(Boolean);
+    return filtered.length > 0 ? filtered : [`https://picsum.photos/seed/${post.id}/800/600`];
+  };
+
+  const { getCachedCollection } = useDBCache();
+
   useEffect(() => {
-    let q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'));
-    
-    if (platformFilter) {
-      q = query(
-        collection(db, 'gallery'),
-        where('platform', '==', platformFilter),
-        orderBy('createdAt', 'desc')
-      );
-    }
+    const fetchGallery = async () => {
+      setLoading(true);
+      try {
+        let q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'));
+        
+        if (platformFilter) {
+          q = query(
+            collection(db, 'gallery'),
+            where('platform', '==', platformFilter),
+            orderBy('createdAt', 'desc')
+          );
+        }
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as GalleryPost[];
-      setPosts(list);
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'gallery');
-    });
+        const data = await getCachedCollection<GalleryPost>('gallery', q, 10 * 60 * 1000);
+        setPosts(data);
+      } catch (error) {
+        console.warn('Failed to load gallery cache:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => unsubscribe();
+    fetchGallery();
   }, [platformFilter]);
 
   const getYoutubeEmbedUrl = (url?: string) => {
@@ -91,7 +107,7 @@ export default function GalleryPage() {
                   />
                 ) : (
                   <div className="grid grid-cols-2 h-full gap-1">
-                    {(selectedPost.images || [selectedPost.image]).filter(Boolean).map((img, idx, arr) => (
+                    {getDialogImages(selectedPost).map((img, idx, arr) => (
                       <div key={idx} className={`${arr.length === 1 ? 'col-span-2' : ''} relative overflow-hidden`}>
                         <img 
                           src={img} 
@@ -187,7 +203,7 @@ export default function GalleryPage() {
                   <Card className="overflow-hidden group border-none shadow-md hover:shadow-2xl transition-all rounded-[2rem] bg-white h-full flex flex-col">
                     <div className="aspect-[4/3] overflow-hidden relative cursor-pointer" onClick={() => setSelectedPost(post)}>
                       <img 
-                        src={post.images?.[0] || post.image} 
+                        src={getPostImage(post)} 
                         alt={post.title} 
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         referrerPolicy="no-referrer"

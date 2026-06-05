@@ -440,3 +440,27 @@ export async function seedSportsCoaches() {
     console.warn('Silent warning: Seeding sports coaches failed (probably not admin or unauthenticated, normal for public visitors):', error);
   }
 }
+
+export async function clearAllDemoData() {
+  const collectionsToClear = [
+    'banners',
+    'gallery',
+    'courses',
+    'food_donation_menu',
+    'sports_coaches',
+    'sports_banners'
+  ];
+
+  try {
+    console.log('Starting demo data cleanup...');
+    for (const colName of collectionsToClear) {
+      const colRef = collection(db, colName);
+      const snapshot = await getDocs(colRef);
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      console.log(`Successfully cleared Firestore collection: ${colName}`);
+    }
+  } catch (error) {
+    console.warn('Silent warning: Failed to clear demo data documents (probably unauthenticated/normal):', error);
+  }
+}

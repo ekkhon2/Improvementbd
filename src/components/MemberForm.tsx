@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { db } from '@/src/lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, setDoc, getDoc } from 'firebase/firestore';
+import { useDBCache } from '@/src/context/DBCacheContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getPlatformContact } from '@/src/lib/utils';
 
@@ -19,6 +20,7 @@ interface MemberFormProps {
 
 export default function MemberForm({ platform, platformName, onSuccess }: MemberFormProps) {
   const { language, t } = useLanguage();
+  const { invalidateCache } = useDBCache();
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [platforms, setPlatforms] = useState<string[]>([platform]);
@@ -121,6 +123,11 @@ export default function MemberForm({ platform, platformName, onSuccess }: Member
       } catch (statsErr) {
         console.warn('Could not update stats totals due to lack of permissions:', statsErr);
       }
+
+      // Invalidate frontend cache for list/stats updates
+      invalidateCache('members');
+      invalidateCache('donors');
+      invalidateCache('stats');
 
       // Redirect to WhatsApp
       const selectedPlatformNames = platforms.map(p => {

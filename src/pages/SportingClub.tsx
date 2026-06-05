@@ -12,6 +12,7 @@ import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
 import { collection, query, onSnapshot, where, orderBy } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
+import { formatImageUrl } from '@/src/lib/utils';
 
 interface Member {
   id: string;
@@ -292,10 +293,13 @@ export default function SportingClub() {
                     {/* Passport-size photo frame */}
                     <div className="w-32 h-40 bg-slate-100 rounded-2xl overflow-hidden border-2 border-slate-200 shadow-inner shrink-0 relative">
                       <img 
-                        src={coach.photoURL || 'https://images.unsplash.com/photo-1542156822-6924d1a71aba?w=400&auto=format&fit=crop&q=60'} 
+                        src={formatImageUrl(coach.photoURL) || 'https://images.unsplash.com/photo-1542156822-6924d1a71aba?w=400&auto=format&fit=crop&q=60'} 
                         alt={coach.name} 
                         className="w-full h-full object-cover object-top" 
                         referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542156822-6924d1a71aba?w=400&auto=format&fit=crop&q=60';
+                        }}
                       />
                     </div>
                     {/* Coach details and action */}

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Library as LibraryIcon, Search, BookOpen, UserPlus, Clock, ArrowRight, Filter } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatImageUrl } from '@/src/lib/utils';
 import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
 import ContactSection from '@/src/components/ContactSection';
@@ -244,10 +244,13 @@ export default function Library() {
                   <Card key={book.id} className="overflow-hidden flex flex-col border-none shadow-sm hover:shadow-xl transition-all group rounded-2xl">
                     <div className="aspect-[3/4] overflow-hidden bg-slate-100 relative">
                       <img 
-                        src={book.image || 'https://picsum.photos/seed/book/400/600'} 
+                        src={formatImageUrl(book.image) || 'https://picsum.photos/seed/book/400/600'} 
                         alt={book.title} 
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://picsum.photos/seed/book/400/600';
+                        }}
                       />
                       <div className="absolute top-4 right-4">
                         <Badge className={cn(

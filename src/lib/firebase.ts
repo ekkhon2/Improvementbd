@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import firebaseConfig from '@/firebase-applet-config.json';
  
 // Support Vercel/Production Env variables or fallback to Google AI Studio configuration
@@ -16,7 +16,11 @@ const finalConfig = {
  
 const app = initializeApp(finalConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app, import.meta.env.VITE_FIREBASE_DATABASE_ID || firebaseConfig.firestoreDatabaseId);
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
+  })
+}, import.meta.env.VITE_FIREBASE_DATABASE_ID || firebaseConfig.firestoreDatabaseId);
 export const googleProvider = new GoogleAuthProvider();
  
 export const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
@@ -71,6 +75,7 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     operationType,
     path
   }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  console.warn('Firestore Non-fatal Warning: ', JSON.stringify(errInfo));
+  // We do not throw to prevent hard component tree crashes on temporary/quota/permission errors, 
+  // allowing the application to degrade gracefully and show empty/fallback state rather than crashing.
 }

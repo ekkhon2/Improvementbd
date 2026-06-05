@@ -10,7 +10,8 @@ import MemberForm from '@/src/components/MemberForm';
 import GallerySection from '@/src/components/GallerySection';
 import ContactSection from '@/src/components/ContactSection';
 import { db, handleFirestoreError, OperationType } from '@/src/lib/firebase';
-import { collection, query, onSnapshot, where, orderBy } from 'firebase/firestore';
+import { collection, query, where, orderBy } from 'firebase/firestore';
+import { useDBCache } from '@/src/context/DBCacheContext';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -38,22 +39,24 @@ export default function EducationPage({ platform }: { platform: 'it-education' |
     courseSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const { getCachedCollection } = useDBCache();
+
   useEffect(() => {
-    const q = query(collection(db, 'courses'), where('platform', '==', platform), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const courseList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Course[];
-      setCourses(courseList);
-      
-      // Extract unique categories
-      const cats = Array.from(new Set(courseList.map(c => c.category)));
-      setCategories(cats);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'courses');
-    });
-    return () => unsubscribe();
+    const fetchCourses = async () => {
+      try {
+        const q = query(collection(db, 'courses'), where('platform', '==', platform), orderBy('createdAt', 'desc'));
+        const courseList = await getCachedCollection<Course>('courses', q, 15 * 60 * 1000);
+        setCourses(courseList);
+        
+        // Extract unique categories
+        const cats = Array.from(new Set(courseList.map(c => c.category)));
+        setCategories(cats);
+      } catch (error) {
+        console.warn('Failed to load courses from cache:', error);
+      }
+    };
+
+    fetchCourses();
   }, [platform]);
 
   const isIT = platform === 'it-education';

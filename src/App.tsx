@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
+import { DBCacheProvider } from './context/DBCacheContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import BloodBank from './pages/BloodBank';
@@ -21,10 +22,10 @@ import GalleryPage from './pages/GalleryPage';
 import Shop from './pages/Shop';
 import TypingTest from './pages/TypingTest';
 import ExamCenter from './pages/ExamCenter';
-import { seedBanners, seedGallery, seedCourses, seedFoodMenu, seedSportsCoaches } from './lib/seed';
 import ErrorBoundary from './components/ErrorBoundary';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import { seedBanners, seedGallery, seedCourses, seedFoodMenu, seedSportsCoaches } from './lib/seed';
 
 export default function App() {
   React.useEffect(() => {
@@ -37,8 +38,9 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <LanguageProvider>
-        <Router>
+      <DBCacheProvider>
+        <LanguageProvider>
+          <Router>
           <ScrollToTop />
           <div className="min-h-screen bg-background font-sans antialiased">
           <Navbar />
@@ -71,6 +73,7 @@ export default function App() {
         </div>
       </Router>
     </LanguageProvider>
-  </AuthProvider>
-);
+      </DBCacheProvider>
+    </AuthProvider>
+  );
 }
