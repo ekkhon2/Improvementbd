@@ -29,6 +29,26 @@ interface Player {
   specialSkill?: string;
   skillLevel: 'pro' | 'intermediate' | 'beginner';
   photoURL?: string;
+  preferredSport?: string;
+}
+
+function getPlayerSport(player: Player): 'cricket' | 'football' | 'other' {
+  const text = `${player.specialSkill || ''} ${player.preferredSport || ''} ${player.fullName || ''} ${player.teamName || ''}`.toLowerCase();
+  
+  if (text.includes('cricket') || text.includes('ক্রিকেট') || text.includes('batsman') || text.includes('bowler') || text.includes('hitter') || text.includes('wicketkeeper') || text.includes('spin') || text.includes('sixers') || text.includes('sixer')) {
+    return 'cricket';
+  }
+  if (text.includes('football') || text.includes('ফুটবল') || text.includes('striker') || text.includes('midfield') || text.includes('goalkeeper') || text.includes('wingback') || text.includes('defender') || text.includes('ফিনিশার') || text.includes('warriors') || text.includes('warrior')) {
+    return 'football';
+  }
+  // Fallbacks based on demo data or standard defaults
+  if (player.id.includes('demo-1') || player.id.includes('demo-3') || player.id.includes('demo-4') || player.id.includes('demo-5') || player.id.includes('demo-7')) {
+    return 'cricket';
+  }
+  if (player.id.includes('demo-2') || player.id.includes('demo-6') || player.id.includes('demo-8') || player.id.includes('demo-9')) {
+    return 'football';
+  }
+  return 'other';
 }
 
 const DEMO_PLAYERS: Player[] = [
@@ -123,6 +143,7 @@ export default function SportingPlayers() {
   const navigate = useNavigate();
   const [dbPlayers, setDbPlayers] = useState<Player[]>([]);
   const [search, setSearch] = useState('');
+  const [selectedSport, setSelectedSport] = useState<'all' | 'cricket' | 'football'>('all');
   
   // Track open states for 'See All' dropdowns
   const [expandedLevels, setExpandedLevels] = useState<Record<string, boolean>>({
@@ -153,7 +174,8 @@ export default function SportingPlayers() {
           teamName: data.teamName || 'Improvement Club',
           specialSkill: data.specialSkill || data.preferredSport || 'Sporting Member',
           skillLevel: level,
-          photoURL: data.photoURL || 'https://images.unsplash.com/photo-1431324155629-1a6edd1dec8d?w=400&auto=format&fit=crop&q=60'
+          photoURL: data.photoURL || 'https://images.unsplash.com/photo-1431324155629-1a6edd1dec8d?w=400&auto=format&fit=crop&q=60',
+          preferredSport: data.preferredSport || ''
         } as Player;
       });
       setDbPlayers(playersList);
@@ -167,12 +189,19 @@ export default function SportingPlayers() {
     !dbPlayers.some(dbP => dbP.fullName.toLowerCase() === demo.fullName.toLowerCase())
   )];
 
-  // Filter with search
+  // Filter with search and selected sport
   const filteredPlayers = allPlayers.filter(p => {
+    // 1. Search Query Match
     const q = search.toLowerCase();
-    return p.fullName.toLowerCase().includes(q) || 
+    const matchesSearch = p.fullName.toLowerCase().includes(q) || 
       (p.teamName || '').toLowerCase().includes(q) || 
       (p.specialSkill || '').toLowerCase().includes(q);
+
+    if (!matchesSearch) return false;
+
+    // 2. Selected Sport Match
+    if (selectedSport === 'all') return true;
+    return getPlayerSport(p) === selectedSport;
   });
 
   const proPlayers = filteredPlayers.filter(p => p.skillLevel === 'pro');
@@ -245,6 +274,40 @@ export default function SportingPlayers() {
                   : 'United with dedication, training, and sportsmanship. Scroll through our active players across three progressive leagues.'
                 }
               </p>
+              
+              {/* Premium Interactive Sport Category Tabs */}
+              <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-6">
+                <Button
+                  onClick={() => setSelectedSport('all')}
+                  className={`rounded-full px-6 font-bold text-xs uppercase tracking-wider h-11 transition-all flex items-center gap-1.5 ${
+                    selectedSport === 'all' 
+                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' 
+                      : 'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10'
+                  }`}
+                >
+                  👥 {language === 'bn' ? 'সবাই (All)' : 'All'}
+                </Button>
+                <Button
+                  onClick={() => setSelectedSport('cricket')}
+                  className={`rounded-full px-6 font-bold text-xs uppercase tracking-wider h-11 transition-all flex items-center gap-1.5 ${
+                    selectedSport === 'cricket' 
+                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' 
+                      : 'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10'
+                  }`}
+                >
+                  🏏 {language === 'bn' ? 'ক্রিকেট (Cricket)' : 'Cricket'}
+                </Button>
+                <Button
+                  onClick={() => setSelectedSport('football')}
+                  className={`rounded-full px-6 font-bold text-xs uppercase tracking-wider h-11 transition-all flex items-center gap-1.5 ${
+                    selectedSport === 'football' 
+                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' 
+                      : 'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10'
+                  }`}
+                >
+                  ⚽ {language === 'bn' ? 'ফুটবল (Football)' : 'Football'}
+                </Button>
+              </div>
             </div>
 
             {/* Premium Interactive Search */}

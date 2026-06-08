@@ -19,6 +19,7 @@ export default function SportsAdmin() {
   const [isCommitteeDialogOpen, setIsCommitteeDialogOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<any>(null);
   const [editingMember, setEditingMember] = useState<any>(null);
+  const [memberSearch, setMemberSearch] = useState('');
   
   // Coach states
   const [coaches, setCoaches] = useState<any[]>([]);
@@ -152,6 +153,18 @@ export default function SportsAdmin() {
       setEditingMember(null);
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `members/${editingMember.id}`);
+    }
+  };
+
+  const handleRemoveFromCommittee = async (memberId: string) => {
+    if (confirm('Are you sure you want to remove this member from the committee?')) {
+      try {
+        await updateDoc(doc(db, 'members', memberId), {
+          isInCommittee: false
+        });
+      } catch (error) {
+        handleFirestoreError(error, OperationType.UPDATE, `members/${memberId}`);
+      }
     }
   };
 
@@ -324,41 +337,66 @@ export default function SportsAdmin() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* All Sports Members */}
             <Card className="rounded-[2.5rem] border-none shadow-xl shadow-slate-100">
-              <CardHeader className="p-8 border-b border-slate-50">
-                <CardTitle className="text-2xl font-black text-primary flex items-center gap-3">
-                  <Users className="h-6 w-6 text-accent" />
-                  All Sports Members
-                </CardTitle>
-                <p className="text-sm text-secondary font-medium">Approved members of the Sporting Club platform.</p>
+              <CardHeader className="p-8 border-b border-slate-50 space-y-4">
+                <div>
+                  <CardTitle className="text-2xl font-black text-primary flex items-center gap-3">
+                    <Users className="h-6 w-6 text-accent" />
+                    All Sports Members
+                  </CardTitle>
+                  <p className="text-sm text-secondary font-medium">Approved members of the Sporting Club platform.</p>
+                </div>
+                {/* Search Bar for Quick Addition */}
+                <div className="relative">
+                  <Input 
+                    type="text"
+                    placeholder="Search member by name, phone or sport..."
+                    value={memberSearch}
+                    onChange={(e) => setMemberSearch(e.target.value)}
+                    className="h-11 pl-4 pr-4 rounded-xl border-slate-200 focus:ring-1 focus:ring-accent"
+                  />
+                </div>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="h-[600px] overflow-y-auto p-8 space-y-4">
-                  {members.map(member => (
+                  {members.filter(m => {
+                    const q = memberSearch.toLowerCase();
+                    return (m.fullName || '').toLowerCase().includes(q) || 
+                      (m.phonePrimary || '').includes(q) || 
+                      (m.preferredSport || '').toLowerCase().includes(q) ||
+                      (m.teamName || '').toLowerCase().includes(q);
+                  }).map(member => (
                     <div key={member.id} className="flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100/80 rounded-2xl transition-all group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center overflow-hidden border border-slate-100">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center overflow-hidden border border-slate-100 shrink-0">
                           {member.photoURL ? (
                             <img src={member.photoURL} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           ) : (
                             <Users className="h-6 w-6 text-slate-300" />
                           )}
                         </div>
-                        <div>
-                          <p className="font-bold text-primary">{member.fullName}</p>
+                        <div className="min-w-0">
+                          <p className="font-bold text-primary truncate">{member.fullName}</p>
                           <p className="text-xs text-secondary font-medium">{member.phonePrimary}</p>
+                          {member.preferredSport && (
+                            <p className="text-[10px] text-accent font-bold mt-0.5">{member.preferredSport}</p>
+                          )}
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-2 shrink-0">
                         {member.isInCommittee ? (
-                          <Badge className="bg-emerald-50 text-emerald-600 border-none font-bold">In Committee</Badge>
+                          <Badge className="bg-emerald-50 text-emerald-600 border-none font-bold text-[10px]">In Committee</Badge>
                         ) : null}
                         <Button 
                           size="sm" 
-                          variant="ghost" 
-                          className="rounded-lg hover:bg-white"
+                          variant="outline" 
+                          className={`rounded-xl font-bold h-9 text-xs px-3 gap-1 ${
+                            member.isInCommittee 
+                              ? 'border-slate-200 text-slate-700 hover:bg-slate-50' 
+                              : 'border-accent bg-accent/5 text-accent hover:bg-accent/10'
+                          }`}
                           onClick={() => handleEditCommittee(member)}
                         >
-                          <Edit className="h-4 w-4" />
+                          {member.isInCommittee ? 'Manage' : '+ Add'}
                         </Button>
                       </div>
                     </div>
@@ -380,18 +418,42 @@ export default function SportsAdmin() {
                 <div className="space-y-6">
                   {committeeMembers.length > 0 ? (
                     committeeMembers.map(m => (
-                      <div key={m.id} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                        <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden shrink-0">
-                          {m.photoURL ? (
-                            <img src={m.photoURL} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                          ) : (
-                            <Users className="h-6 w-6 text-white/20" />
-                          )}
+                      <div key={m.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 gap-4 group">
+                        <div className="flex items-center gap-4 min-w-0">
+                          <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                            {m.photoURL ? (
+                              <img src={m.photoURL} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            ) : (
+                              <Users className="h-6 w-6 text-white/20" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-bold truncate">{m.fullName}</p>
+                            <p className="text-xs text-accent font-bold uppercase tracking-widest">{m.pod || 'Member'}</p>
+                            <p className="text-[10px] text-white/40 truncate">{m.teamName || 'No Team'}</p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <p className="font-bold truncate">{m.fullName}</p>
-                          <p className="text-xs text-accent font-bold uppercase tracking-widest">{m.pod || 'Member'}</p>
-                          <p className="text-[10px] text-white/40 truncate">{m.teamName || 'No Team'}</p>
+                        
+                        {/* Interactive Edit and Direct Remove Options */}
+                        <div className="flex gap-2 shrink-0">
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-9 w-9 p-0 text-white hover:bg-white/15 rounded-xl transition-all"
+                            onClick={() => handleEditCommittee(m)}
+                            title="Edit Role/Team"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-9 w-9 p-0 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 rounded-xl transition-all"
+                            onClick={() => handleRemoveFromCommittee(m.id)}
+                            title="Remove from Committee"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     ))
