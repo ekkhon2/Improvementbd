@@ -42,6 +42,7 @@ export default function SportingClub() {
   const [banners, setBanners] = useState<any[]>([]);
   const [committee, setCommittee] = useState<any[]>([]);
   const [coaches, setCoaches] = useState<any[]>([]);
+  const [teams, setTeams] = useState<any[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
 
   useEffect(() => {
@@ -76,6 +77,16 @@ export default function SportingClub() {
       setCoaches(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, 'sports_coaches');
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const q = query(collection(db, 'sports_teams'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setTeams(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'sports_teams');
     });
     return () => unsubscribe();
   }, []);
@@ -383,49 +394,42 @@ export default function SportingClub() {
                     msOverflowStyle: 'none',
                   }}
                 >
-                  {[
-                    {
-                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ক্রিকেট একাডেমি' : 'Improvement Cricket Academy',
-                      logo: 'https://images.unsplash.com/photo-1540747737956-378724044302?w=150&auto=format&fit=crop&q=60'
-                    },
-                    {
-                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ফুটবল ক্লাব' : 'Improvement Football Club',
-                      logo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=150&auto=format&fit=crop&q=60'
-                    },
-                    {
-                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ই-স্পোর্টস নিনজাস' : 'Improvement Esports Ninjas',
-                      logo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&auto=format&fit=crop&q=60'
-                    },
-                    {
-                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট অ্যাথলেটিক ক্লাব' : 'Improvement Athletic Club',
-                      logo: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=150&auto=format&fit=crop&q=60'
-                    },
-                    {
-                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ব্যাডমিন্টন কিংস' : 'Improvement Badminton Kings',
-                      logo: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=150&auto=format&fit=crop&q=60'
-                    },
-                    {
-                      name: language === 'bn' ? 'ইমপ্রুভমেন্ট ভলিবল ওয়ারিয়র্স' : 'Improvement Volleyball Warriors',
-                      logo: 'https://images.unsplash.com/photo-1592656094267-764a4515757d?w=150&auto=format&fit=crop&q=60'
-                    }
-                  ].map((team, idx) => (
-                    <div 
-                      key={idx} 
-                      className="w-[180px] xs:w-[200px] sm:w-[220px] shrink-0 snap-start bg-slate-50/80 rounded-2xl p-4 border border-slate-100/70 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all duration-300 flex flex-col items-center text-center space-y-3 group/card"
-                    >
-                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-white shrink-0">
-                        <img 
-                          src={team.logo} 
-                          alt={team.name} 
-                          className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-300"
-                          referrerPolicy="no-referrer"
-                        />
+                  {teams.length > 0 ? (
+                    teams.map((team, idx) => (
+                      <div 
+                        key={team.id || idx} 
+                        className="w-[200px] xs:w-[220px] sm:w-[240px] shrink-0 snap-start bg-slate-50/80 rounded-2xl p-5 border border-slate-100/70 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all duration-300 flex flex-col items-center text-center space-y-3 group/card"
+                      >
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-white shrink-0">
+                          <img 
+                            src={team.logo || 'https://images.unsplash.com/photo-1540747737956-378724044302?w=150&auto=format&fit=crop&q=60'} 
+                            alt={team.name} 
+                            className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-300"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                        <div className="space-y-1 w-full text-center">
+                          <p className="text-xs font-black text-slate-800 leading-tight group-hover/card:text-emerald-700 transition-colors line-clamp-1">
+                            {team.name}
+                          </p>
+                          {team.leaderName && (
+                            <p className="text-[10px] text-slate-500 font-medium">
+                              <span className="font-extrabold text-slate-600">{language === 'bn' ? 'লিডার:' : 'Leader:'}</span> {team.leaderName}
+                            </p>
+                          )}
+                          {team.coachName && (
+                            <p className="text-[10px] text-slate-500 font-medium">
+                              <span className="font-extrabold text-slate-600">{language === 'bn' ? 'কোচ:' : 'Coach:'}</span> {team.coachName}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-xs font-black text-slate-800 leading-tight group-hover/card:text-emerald-700 transition-colors">
-                        {team.name}
-                      </p>
+                    ))
+                  ) : (
+                    <div className="text-center py-12 text-xs font-semibold text-slate-400 italic w-full">
+                      {language === 'bn' ? 'কোনো সক্রিয় দল খুঁজে পাওয়া যায়নি।' : 'No active teams added yet.'}
                     </div>
-                  ))}
+                  )}
                 </div>
 
                 {/* Left & Right Sliding Buttons */}

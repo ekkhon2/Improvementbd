@@ -135,6 +135,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /sports_teams/{teamId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /products/{productId} {
       allow read: if true;
       allow write: if isAdmin();

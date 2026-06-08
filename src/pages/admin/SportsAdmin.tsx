@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, Image as ImageIcon, Users, ShieldCheck } from 'lucide-react';
+import { Plus, Edit, Trash2, Image as ImageIcon, Users, ShieldCheck, Search, Trophy } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +46,41 @@ export default function SportsAdmin() {
     isInCommittee: false
   });
 
+  // Dynamic Players and Teams States
+  const [allSportsMembers, setAllSportsMembers] = useState<any[]>([]);
+  const [sportsTeams, setSportsTeams] = useState<any[]>([]);
+  
+  // Players tab UI/Control states
+  const [isPlayerAddDialogOpen, setIsPlayerAddDialogOpen] = useState(false);
+  const [isPlayerEditDialogOpen, setIsPlayerEditDialogOpen] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState<any>(null);
+  const [playerSearch, setPlayerSearch] = useState('');
+  
+  const [playerFormData, setPlayerFormData] = useState({
+    fullName: '',
+    phonePrimary: '',
+    facebookURL: '',
+    photoURL: '',
+    teamName: '',
+    skillLevel: 'beginner',
+    preferredSport: 'cricket',
+    specialSkill: '',
+    totalRuns: 0,
+    totalWickets: 0
+  });
+
+  // Teams tab UI/Control states
+  const [isTeamDialogOpen, setIsTeamDialogOpen] = useState(false);
+  const [editingTeam, setEditingTeam] = useState<any>(null);
+  const [teamSearch, setTeamSearch] = useState('');
+  
+  const [teamFormData, setTeamFormData] = useState({
+    name: '',
+    logo: '',
+    leaderName: '',
+    coachName: ''
+  });
+
   useEffect(() => {
     const q = query(collection(db, 'sports_banners'), orderBy('order', 'asc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -76,6 +111,31 @@ export default function SportsAdmin() {
       setCoaches(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, 'sports_coaches');
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch all sporting members (pending & approved) for structural tabs
+  useEffect(() => {
+    const q = query(
+      collection(db, 'members'),
+      where('platform', 'array-contains', 'sporting-club')
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setAllSportsMembers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'members');
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch all sports teams
+  useEffect(() => {
+    const q = query(collection(db, 'sports_teams'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setSportsTeams(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'sports_teams');
     });
     return () => unsubscribe();
   }, []);
@@ -201,6 +261,142 @@ export default function SportsAdmin() {
 
   const committeeMembers = members.filter(m => m.isInCommittee);
 
+  // Player action handlers
+  const handlePlayerSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const dataToSave = {
+        fullName: playerFormData.fullName,
+        phonePrimary: playerFormData.phonePrimary,
+        facebookURL: playerFormData.facebookURL,
+        photoURL: playerFormData.photoURL,
+        teamName: playerFormData.teamName,
+        skillLevel: playerFormData.skillLevel,
+        preferredSport: playerFormData.preferredSport,
+        specialSkill: playerFormData.specialSkill,
+        totalRuns: Number(playerFormData.totalRuns) || 0,
+        totalWickets: Number(playerFormData.totalWickets) || 0,
+        platform: ['sporting-club'],
+        status: 'approved'
+      };
+      
+      if (editingPlayer) {
+        await updateDoc(doc(db, 'members', editingPlayer.id), {
+          fullName: playerFormData.fullName,
+          phonePrimary: playerFormData.phonePrimary,
+          facebookURL: playerFormData.facebookURL,
+          photoURL: playerFormData.photoURL,
+          teamName: playerFormData.teamName,
+          skillLevel: playerFormData.skillLevel,
+          preferredSport: playerFormData.preferredSport,
+          specialSkill: playerFormData.specialSkill,
+          totalRuns: Number(playerFormData.totalRuns) || 0,
+          totalWickets: Number(playerFormData.totalWickets) || 0,
+        });
+        setIsPlayerEditDialogOpen(false);
+      } else {
+        await addDoc(collection(db, 'members'), {
+          ...dataToSave,
+          createdAt: serverTimestamp()
+        });
+        setIsPlayerAddDialogOpen(false);
+      }
+      setEditingPlayer(null);
+      setPlayerFormData({
+        fullName: '',
+        phonePrimary: '',
+        facebookURL: '',
+        photoURL: '',
+        teamName: '',
+        skillLevel: 'beginner',
+        preferredSport: 'cricket',
+        specialSkill: '',
+        totalRuns: 0,
+        totalWickets: 0
+      });
+    } catch (error) {
+      handleFirestoreError(error, editingPlayer ? OperationType.UPDATE : OperationType.CREATE, 'members');
+    }
+  };
+
+  const handleEditPlayer = (player: any) => {
+    setEditingPlayer(player);
+    setPlayerFormData({
+      fullName: player.fullName || '',
+      phonePrimary: player.phonePrimary || '',
+      facebookURL: player.facebookURL || '',
+      photoURL: player.photoURL || '',
+      teamName: player.teamName || '',
+      skillLevel: player.skillLevel || 'beginner',
+      preferredSport: player.preferredSport || 'cricket',
+      specialSkill: player.specialSkill || '',
+      totalRuns: player.totalRuns !== undefined ? player.totalRuns : 0,
+      totalWickets: player.totalWickets !== undefined ? player.totalWickets : 0
+    });
+    setIsPlayerEditDialogOpen(true);
+  };
+
+  const handleApproveRequest = async (memberId: string) => {
+    try {
+      await updateDoc(doc(db, 'members', memberId), {
+        status: 'approved'
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `members/${memberId}`);
+    }
+  };
+
+  const handleRemovePlayer = async (memberId: string) => {
+    if (confirm('Are you sure you want to delete this player/request permanently?')) {
+      try {
+        await deleteDoc(doc(db, 'members', memberId));
+      } catch (error) {
+        handleFirestoreError(error, OperationType.DELETE, `members/${memberId}`);
+      }
+    }
+  };
+
+  // Team action handlers
+  const handleTeamSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingTeam) {
+        await updateDoc(doc(db, 'sports_teams', editingTeam.id), teamFormData);
+      } else {
+        await addDoc(collection(db, 'sports_teams'), {
+          ...teamFormData,
+          createdAt: serverTimestamp()
+        });
+      }
+      setIsTeamDialogOpen(false);
+      setEditingTeam(null);
+      setTeamFormData({ name: '', logo: '', leaderName: '', coachName: '' });
+    } catch (error) {
+      handleFirestoreError(error, editingTeam ? OperationType.UPDATE : OperationType.CREATE, 'sports_teams');
+    }
+  };
+
+  const handleEditTeam = (team: any) => {
+    setEditingTeam(team);
+    setTeamFormData({
+      name: team.name || '',
+      logo: team.logo || '',
+      leaderName: team.leaderName || '',
+      coachName: team.coachName || ''
+    });
+    setIsTeamDialogOpen(true);
+  };
+
+  const handleDeleteTeam = async (id: string) => {
+    if (confirm('Delete this team permanently?')) {
+      try {
+        await deleteDoc(doc(db, 'sports_teams', id));
+      } catch (error) {
+        handleFirestoreError(error, OperationType.DELETE, `sports_teams/${id}`);
+      }
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -211,7 +407,7 @@ export default function SportsAdmin() {
       </div>
 
       <Tabs defaultValue="banners" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-14 p-1 bg-slate-100 rounded-2xl mb-8">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto md:h-14 p-1 bg-slate-100 rounded-2xl mb-8 gap-1">
           <TabsTrigger value="banners" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <ImageIcon className="h-4 w-4 mr-2" /> Banners
           </TabsTrigger>
@@ -220,6 +416,12 @@ export default function SportsAdmin() {
           </TabsTrigger>
           <TabsTrigger value="coaches" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <ShieldCheck className="h-4 w-4 mr-2" /> Coaches
+          </TabsTrigger>
+          <TabsTrigger value="players" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <Users className="h-4 w-4 mr-2" /> Players
+          </TabsTrigger>
+          <TabsTrigger value="teams" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <Trophy className="h-4 w-4 mr-2" /> Teams
           </TabsTrigger>
         </TabsList>
 
@@ -648,6 +850,588 @@ export default function SportsAdmin() {
               <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
                 <Users className="h-10 w-10 text-slate-300 mx-auto mb-3" />
                 <p className="text-sm font-semibold text-slate-400">No coaches added to the database yet.</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* Players Tab Content */}
+        <TabsContent value="players" className="space-y-8 outline-none">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+              <Input 
+                value={playerSearch}
+                onChange={e => setPlayerSearch(e.target.value)}
+                placeholder="খেলোয়াড় খুঁজুন..."
+                className="pl-10 h-10 input-solid"
+              />
+            </div>
+            
+            <Dialog open={isPlayerAddDialogOpen} onOpenChange={setIsPlayerAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  className="bg-accent hover:bg-accent/90 text-white font-bold h-11 px-5 rounded-xl shadow-md cursor-pointer w-full sm:w-auto"
+                  onClick={() => {
+                    setEditingPlayer(null);
+                    setPlayerFormData({
+                      fullName: '',
+                      phonePrimary: '',
+                      facebookURL: '',
+                      photoURL: '',
+                      teamName: '',
+                      skillLevel: 'beginner',
+                      preferredSport: 'cricket',
+                      specialSkill: '',
+                      totalRuns: 0,
+                      totalWickets: 0
+                    });
+                  }}
+                >
+                  <Plus className="mr-1.5 h-4 w-4" /> সরাসরি প্লেয়ার যোগ করুন
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md dialog-solid max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-primary">সরাসরি নতুন খেলোয়াড় যোগ করুন</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handlePlayerSubmit} className="space-y-4 pt-4">
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">খেলোয়াড়ের নাম (Full Name)</Label>
+                    <Input 
+                      required 
+                      value={playerFormData.fullName} 
+                      onChange={e => setPlayerFormData({...playerFormData, fullName: e.target.value})}
+                      placeholder="যেমন: ইমরান হোসেন"
+                      className="input-solid h-10"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="font-bold text-primary">মোবাইল নম্বর</Label>
+                      <Input 
+                        required 
+                        value={playerFormData.phonePrimary} 
+                        onChange={e => setPlayerFormData({...playerFormData, phonePrimary: e.target.value})}
+                        placeholder="যেমন: 01700000000"
+                        className="input-solid h-10"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="font-bold text-primary">ফেসবুক প্রোফাইল লিংক</Label>
+                      <Input 
+                        value={playerFormData.facebookURL} 
+                        onChange={e => setPlayerFormData({...playerFormData, facebookURL: e.target.value})}
+                        placeholder="যেমন: https://facebook.com/..."
+                        className="input-solid h-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">পাসপোর্ট সাইজ ছবি লিংক (Photo URL)</Label>
+                    <Input 
+                      value={playerFormData.photoURL} 
+                      onChange={e => setPlayerFormData({...playerFormData, photoURL: e.target.value})}
+                      placeholder="https://images.unsplash.com/..."
+                      className="input-solid h-10"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="font-bold text-primary">খেলার ধরণ (Sport)</Label>
+                      <Select 
+                        value={playerFormData.preferredSport} 
+                        onValueChange={val => setPlayerFormData({...playerFormData, preferredSport: val})}
+                      >
+                        <SelectTrigger className="input-solid h-10 bg-white">
+                          <SelectValue placeholder="খেলা নির্বাচন করুন" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white z-[9999]">
+                          <SelectItem value="cricket">ক্রিকেট (Cricket)</SelectItem>
+                          <SelectItem value="football">ফুটবল (Football)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="font-bold text-primary">খেলোয়াড় লেবেল (Level)</Label>
+                      <Select 
+                        value={playerFormData.skillLevel} 
+                        onValueChange={val => setPlayerFormData({...playerFormData, skillLevel: val as any})}
+                      >
+                        <SelectTrigger className="input-solid h-10 bg-white">
+                          <SelectValue placeholder="লেভেল নির্বাচন করুন" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white z-[9999]">
+                          <SelectItem value="pro">প্রো লেভেল (Pro)</SelectItem>
+                          <SelectItem value="intermediate">ইন্টারমিডিয়েট (Intermediate)</SelectItem>
+                          <SelectItem value="beginner">বিগিনার (Beginner)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="font-bold text-primary">দলের নাম (Team Name)</Label>
+                      <Input 
+                        value={playerFormData.teamName} 
+                        onChange={e => setPlayerFormData({...playerFormData, teamName: e.target.value})}
+                        placeholder="যেমন: ইমপ্রুভমেন্ট ফাইটারস"
+                        className="input-solid h-10"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="font-bold text-primary">বিশেষ দক্ষতা (Specialty)</Label>
+                      <Input 
+                        value={playerFormData.specialSkill} 
+                        onChange={e => setPlayerFormData({...playerFormData, specialSkill: e.target.value})}
+                        placeholder="যেমন: ফার্স্ট বোলার / রাইট-হ্যান্ড স্ট্রাইকার"
+                        className="input-solid h-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                    <div className="space-y-1.5">
+                      <Label className="font-bold text-primary">মোট রান (Lifetime Runs)</Label>
+                      <Input 
+                        type="number"
+                        value={playerFormData.totalRuns} 
+                        onChange={e => setPlayerFormData({...playerFormData, totalRuns: Number(e.target.value) || 0})}
+                        placeholder="যেমন: 3500"
+                        className="input-solid h-10"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="font-bold text-primary">মোট উইকেট (Lifetime Wickets)</Label>
+                      <Input 
+                        type="number"
+                        value={playerFormData.totalWickets} 
+                        onChange={e => setPlayerFormData({...playerFormData, totalWickets: Number(e.target.value) || 0})}
+                        placeholder="যেমন: 45"
+                        className="input-solid h-10"
+                      />
+                    </div>
+                  </div>
+
+                  <Button type="submit" className="w-full h-11 text-base font-bold rounded-xl shadow-md mt-2">
+                    খেলোয়াড় সংরক্ষণ করুন
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Pending requests */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
+              <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">Pending</Badge>
+              নতুন সদস্য আবেদন তালিকা (Pending Membership Requests)
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {allSportsMembers.filter(m => m.status === 'pending').length > 0 ? (
+                allSportsMembers.filter(m => m.status === 'pending').map(m => (
+                  <div key={m.id} className="bg-white rounded-3xl border border-slate-100 p-6 flex flex-col md:flex-row justify-between gap-4 shadow-sm text-left">
+                    <div className="flex items-start gap-4">
+                      <div className="w-14 h-14 rounded-2xl overflow-hidden bg-slate-50 shrink-0 border border-slate-100">
+                        {m.photoURL ? (
+                          <img src={m.photoURL} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <Users className="h-5 w-5 text-slate-300 m-4.5" />
+                        )}
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="font-bold text-slate-800 text-sm">{m.fullName}</h4>
+                        <p className="text-xs text-slate-500 font-mono">{m.phonePrimary} {m.address ? `| ${m.address}` : ''}</p>
+                        <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wide">
+                          Sport: {m.preferredSport || m.interest || 'Not Specified'} {m.skillLevel ? `(${m.skillLevel})` : ''}
+                        </p>
+                        {m.message && (
+                          <p className="text-[11px] text-slate-400 italic font-medium leading-tight">" {m.message} "</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 md:flex-col shrink-0">
+                      <Button 
+                        size="sm"
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl w-full"
+                        onClick={() => handleApproveRequest(m.id)}
+                      >
+                        অনুমোদন (Approve)
+                      </Button>
+                      <Button 
+                        size="sm"
+                        variant="ghost"
+                        className="text-rose-500 hover:text-rose-600 hover:bg-rose-50 font-bold rounded-xl w-full"
+                        onClick={() => handleRemovePlayer(m.id)}
+                      >
+                        বাতিল (Reject)
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                  <p className="text-xs font-bold text-slate-400">কোনো নতুন ক্লাব সদস্যের আবেদন জমা নেই।</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Active players list */}
+          <div className="space-y-4 pt-4 border-t border-slate-150">
+            <h3 className="text-lg font-black text-slate-800">
+              বর্তমান সক্রিয় খেলোয়াড়বৃন্দ (Active Players & Statistics)
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allSportsMembers.filter(m => {
+                if (m.status !== 'approved') return false;
+                if (!playerSearch) return true;
+                const searchTxt = playerSearch.toLowerCase();
+                return m.fullName.toLowerCase().includes(searchTxt) || 
+                       (m.teamName || '').toLowerCase().includes(searchTxt) ||
+                       (m.preferredSport || '').toLowerCase().includes(searchTxt);
+              }).length > 0 ? (
+                allSportsMembers.filter(m => {
+                  if (m.status !== 'approved') return false;
+                  if (!playerSearch) return true;
+                  const searchTxt = playerSearch.toLowerCase();
+                  return m.fullName.toLowerCase().includes(searchTxt) || 
+                         (m.teamName || '').toLowerCase().includes(searchTxt) ||
+                         (m.preferredSport || '').toLowerCase().includes(searchTxt);
+                }).map(p => (
+                  <div key={p.id} className="bg-white rounded-3xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between text-left">
+                    <div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-50 shrink-0 border border-slate-100">
+                          {p.photoURL ? (
+                            <img src={p.photoURL} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          ) : (
+                            <Users className="h-6 w-6 text-slate-300 m-5" />
+                          )}
+                        </div>
+                        <div className="min-w-0 space-y-1 text-left">
+                          <h4 className="font-extrabold text-slate-800 leading-tight truncate">{p.fullName}</h4>
+                          <Badge className={`text-[9px] font-bold px-1.5 py-0.5 rounded-lg
+                            ${p.skillLevel === 'pro' ? 'bg-amber-100 text-amber-800 animate-pulse' : ''}
+                            ${p.skillLevel === 'intermediate' ? 'bg-emerald-100 text-emerald-800' : ''}
+                            ${p.skillLevel === 'beginner' ? 'bg-sky-100 text-sky-850' : ''}
+                          `}>
+                            {p.skillLevel ? p.skillLevel.toUpperCase() : 'MEMBER'}
+                          </Badge>
+                          <p className="text-[10px] font-bold text-emerald-600 font-mono uppercase tracking-wider truncate">{p.teamName || 'NO TEAM'}</p>
+                          <p className="text-[10px] text-slate-400 font-medium">{p.phonePrimary || 'No Phone'}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-slate-100 flex-grow">
+                        <div className="bg-slate-50 p-2 rounded-xl text-center border border-slate-50">
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total Runs</p>
+                          <p className="text-sm font-black text-slate-800">{p.totalRuns || 0}</p>
+                        </div>
+                        <div className="bg-slate-50 p-2 rounded-xl text-center border border-slate-50">
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total Wickets</p>
+                          <p className="text-sm font-black text-slate-800">{p.totalWickets || 0}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="rounded-xl flex-grow font-bold h-9 bg-slate-50 hover:bg-slate-100 text-slate-700"
+                        onClick={() => handleEditPlayer(p)}
+                      >
+                        <Edit className="h-3.5 w-3.5 mr-1" /> এডিট
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="rounded-xl hover:bg-rose-50 text-rose-500 hover:text-rose-600 border-slate-100 shrink-0 h-9"
+                        onClick={() => handleRemovePlayer(p.id)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-16 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
+                  <p className="text-sm font-bold text-slate-400">কোনো খেলোয়াড় পাওয়া যায়নি।</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Edit player statistics catalog */}
+          <Dialog open={isPlayerEditDialogOpen} onOpenChange={setIsPlayerEditDialogOpen}>
+            <DialogContent className="max-w-md dialog-solid max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-primary">খেলোয়াড়ের তথ্য ও স্কোর আপডেট</DialogTitle>
+                <p className="text-slate-500 font-bold">{editingPlayer?.fullName}</p>
+              </DialogHeader>
+              <form onSubmit={handlePlayerSubmit} className="space-y-4 pt-4 text-left">
+                <div className="space-y-1.5">
+                  <Label className="font-bold text-primary">খেলোয়াড়ের নাম (Full Name)</Label>
+                  <Input 
+                    required 
+                    value={playerFormData.fullName} 
+                    onChange={e => setPlayerFormData({...playerFormData, fullName: e.target.value})}
+                    className="input-solid h-10"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">মোবাইল নম্বর</Label>
+                    <Input 
+                      required 
+                      value={playerFormData.phonePrimary} 
+                      onChange={e => setPlayerFormData({...playerFormData, phonePrimary: e.target.value})}
+                      className="input-solid h-10"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">ফেসবুক প্রোফাইল লিংক</Label>
+                    <Input 
+                      value={playerFormData.facebookURL} 
+                      onChange={e => setPlayerFormData({...playerFormData, facebookURL: e.target.value})}
+                      className="input-solid h-10"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="font-bold text-primary">ছবি লিংক (Photo URL)</Label>
+                  <Input 
+                    value={playerFormData.photoURL} 
+                    onChange={e => setPlayerFormData({...playerFormData, photoURL: e.target.value})}
+                    className="input-solid h-10"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">খেলার ধরণ (Sport)</Label>
+                    <Select 
+                      value={playerFormData.preferredSport} 
+                      onValueChange={val => setPlayerFormData({...playerFormData, preferredSport: val})}
+                    >
+                      <SelectTrigger className="input-solid h-10 bg-white">
+                        <SelectValue placeholder="খেলা নির্বাচন করুন" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white z-[9999]">
+                        <SelectItem value="cricket">ক্রিকেট (Cricket)</SelectItem>
+                        <SelectItem value="football">ফুটবল (Football)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">খেলোয়াড় লেবেল (Level)</Label>
+                    <Select 
+                      value={playerFormData.skillLevel} 
+                      onValueChange={val => setPlayerFormData({...playerFormData, skillLevel: val as any})}
+                    >
+                      <SelectTrigger className="input-solid h-10 bg-white">
+                        <SelectValue placeholder="লেভেল নির্বাচন করুন" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white z-[9999]">
+                        <SelectItem value="pro">প্রো লেভেল (Pro)</SelectItem>
+                        <SelectItem value="intermediate">ইন্টারমিডিয়েট (Intermediate)</SelectItem>
+                        <SelectItem value="beginner">বিগিনার (Beginner)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">দলের নাম (Team Name)</Label>
+                    <Input 
+                      value={playerFormData.teamName} 
+                      onChange={e => setPlayerFormData({...playerFormData, teamName: e.target.value})}
+                      className="input-solid h-10"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">विशेष দক্ষতা (Specialty)</Label>
+                    <Input 
+                      value={playerFormData.specialSkill} 
+                      onChange={e => setPlayerFormData({...playerFormData, specialSkill: e.target.value})}
+                      className="input-solid h-10"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 pt-3 border-t border-slate-100 bg-slate-50/50 p-3 rounded-2xl">
+                  <div className="space-y-1.5">
+                    <Label className="font-extrabold text-blue-700">মোট রান (Total Runs)</Label>
+                    <Input 
+                      type="number"
+                      value={playerFormData.totalRuns} 
+                      onChange={e => setPlayerFormData({...playerFormData, totalRuns: Number(e.target.value) || 0})}
+                      className="input-solid h-10 border-blue-200"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="font-extrabold text-blue-700">মোট উইকেট (Total Wickets)</Label>
+                    <Input 
+                      type="number"
+                      value={playerFormData.totalWickets} 
+                      onChange={e => setPlayerFormData({...playerFormData, totalWickets: Number(e.target.value) || 0})}
+                      className="input-solid h-10 border-blue-200"
+                    />
+                  </div>
+                </div>
+
+                <Button type="submit" className="w-full h-12 text-base font-bold rounded-xl shadow-md mt-2">
+                  তথ্য ও পরিসংখ্যান আপডেট করুন
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+
+        {/* Teams Tab Content */}
+        <TabsContent value="teams" className="space-y-8 outline-none">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+              <Input 
+                value={teamSearch}
+                onChange={e => setTeamSearch(e.target.value)}
+                placeholder="দল খুঁজুন..."
+                className="pl-10 h-10 input-solid"
+              />
+            </div>
+            
+            <Dialog open={isTeamDialogOpen} onOpenChange={setIsTeamDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  className="bg-accent hover:bg-accent/90 text-white font-bold h-11 px-5 rounded-xl shadow-md cursor-pointer w-full sm:w-auto"
+                  onClick={() => {
+                    setEditingTeam(null);
+                    setTeamFormData({ name: '', logo: '', leaderName: '', coachName: '' });
+                  }}
+                >
+                  <Plus className="mr-1.5 h-4 w-4" /> নতুন স্পোর্টস টিম যোগ করুন
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md dialog-solid">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-primary">
+                    {editingTeam ? 'টিমের তথ্য পরিবর্তন করুন' : 'নতুন টিম ক্রিয়েট করুন'}
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleTeamSubmit} className="space-y-4 pt-4 text-left">
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">টিমের নাম (Team Name)</Label>
+                    <Input 
+                      required 
+                      value={teamFormData.name} 
+                      onChange={e => setTeamFormData({...teamFormData, name: e.target.value})}
+                      placeholder="যেমন: ইমপ্রুভমেন্ট ক্রিকেট একাডেমি"
+                      className="input-solid h-11"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">টিম লোগো ছবি লিংক (Passport Image URL)</Label>
+                    <Input 
+                      value={teamFormData.logo} 
+                      onChange={e => setTeamFormData({...teamFormData, logo: e.target.value})}
+                      placeholder="https://images.unsplash.com/..."
+                      className="input-solid h-11"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">টিম লিডারের নাম (Team Leader)</Label>
+                    <Input 
+                      value={teamFormData.leaderName} 
+                      onChange={e => setTeamFormData({...teamFormData, leaderName: e.target.value})}
+                      placeholder="যেমন: সঞ্জিদ রহমান"
+                      className="input-solid h-11"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="font-bold text-primary">কোচের নাম (Team Coach)</Label>
+                    <Input 
+                      value={teamFormData.coachName} 
+                      onChange={e => setTeamFormData({...teamFormData, coachName: e.target.value})}
+                      placeholder="যেমন:BCB সার্টিফাইড কোচ"
+                      className="input-solid h-11"
+                    />
+                  </div>
+
+                  <Button type="submit" className="w-full h-12 text-base font-bold rounded-xl shadow-lg mt-2">
+                    {editingTeam ? 'টিমের তথ্য সেভ করুন' : 'নতুন টিম এড করুন'}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sportsTeams.filter(t => {
+              if (!teamSearch) return true;
+              return t.name.toLowerCase().includes(teamSearch.toLowerCase());
+            }).length > 0 ? (
+              sportsTeams.filter(t => {
+                if (!teamSearch) return true;
+                return t.name.toLowerCase().includes(teamSearch.toLowerCase());
+              }).map(team => (
+                <div key={team.id} className="bg-white rounded-3xl border border-slate-100 p-6 flex items-start gap-4 justify-between shadow-sm hover:shadow-md transition-all text-left">
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-slate-50 shrink-0 border-2 border-white shadow-sm flex items-center justify-center">
+                      {team.logo ? (
+                        <img src={team.logo} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <Trophy className="h-6 w-6 text-slate-300" />
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-black text-slate-800 leading-tight">{team.name}</h4>
+                      {team.leaderName && (
+                        <p className="text-xs text-slate-500">
+                          <span className="font-bold text-slate-600">Leader:</span> {team.leaderName}
+                        </p>
+                      )}
+                      {team.coachName && (
+                        <p className="text-xs text-slate-500">
+                          <span className="font-bold text-slate-600">Coach:</span> {team.coachName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 shrink-0">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg"
+                      onClick={() => handleEditTeam(team)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-rose-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg"
+                      onClick={() => handleDeleteTeam(team.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
+                <Trophy className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                <p className="text-sm font-semibold text-slate-400">কোনো টিম যোগ করা হয়নি এখনো।</p>
               </div>
             )}
           </div>

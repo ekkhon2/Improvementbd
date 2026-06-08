@@ -30,9 +30,13 @@ interface Player {
   skillLevel: 'pro' | 'intermediate' | 'beginner';
   photoURL?: string;
   preferredSport?: string;
+  totalRuns?: number;
+  totalWickets?: number;
 }
 
 function getPlayerSport(player: Player): 'cricket' | 'football' | 'other' {
+  if (player.preferredSport && player.preferredSport.toLowerCase() === 'cricket') return 'cricket';
+  if (player.preferredSport && player.preferredSport.toLowerCase() === 'football') return 'football';
   const text = `${player.specialSkill || ''} ${player.preferredSport || ''} ${player.fullName || ''} ${player.teamName || ''}`.toLowerCase();
   
   if (text.includes('cricket') || text.includes('ক্রিকেট') || text.includes('batsman') || text.includes('bowler') || text.includes('hitter') || text.includes('wicketkeeper') || text.includes('spin') || text.includes('sixers') || text.includes('sixer')) {
@@ -41,102 +45,8 @@ function getPlayerSport(player: Player): 'cricket' | 'football' | 'other' {
   if (text.includes('football') || text.includes('ফুটবল') || text.includes('striker') || text.includes('midfield') || text.includes('goalkeeper') || text.includes('wingback') || text.includes('defender') || text.includes('ফিনিশার') || text.includes('warriors') || text.includes('warrior')) {
     return 'football';
   }
-  // Fallbacks based on demo data or standard defaults
-  if (player.id.includes('demo-1') || player.id.includes('demo-3') || player.id.includes('demo-4') || player.id.includes('demo-5') || player.id.includes('demo-7')) {
-    return 'cricket';
-  }
-  if (player.id.includes('demo-2') || player.id.includes('demo-6') || player.id.includes('demo-8') || player.id.includes('demo-9')) {
-    return 'football';
-  }
   return 'other';
 }
-
-const DEMO_PLAYERS: Player[] = [
-  // Pro Players
-  {
-    id: 'demo-1',
-    fullName: 'সঞ্জিদ রহমান (Sanjid)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Ninjas',
-    specialSkill: 'পাওয়ার হিটার এবং অলরাউন্ডার (Power Hitter & Allrounder)',
-    skillLevel: 'pro',
-    photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=60'
-  },
-  {
-    id: 'demo-2',
-    fullName: 'নদিম চৌধুরী (Nadim)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Warriors',
-    specialSkill: 'ক্লিনিক্যাল ফিনিশার এবং স্ট্রাইকার (Clinical Finisher & Striker)',
-    skillLevel: 'pro',
-    photoURL: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=60'
-  },
-  {
-    id: 'demo-3',
-    fullName: 'রকিব হাসান (Rakib)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Tigers',
-    specialSkill: 'এক্সপ্রেস ফাস্ট বোলার (Express Fast Bowler)',
-    skillLevel: 'pro',
-    photoURL: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&auto=format&fit=crop&q=60'
-  },
-  // Intermediate Players
-  {
-    id: 'demo-4',
-    fullName: 'তানভীর আহমেদ (Tanvir)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Ninjas',
-    specialSkill: 'লেফট আর্ট স্পিনার (Left-Arm Orthodox Spin)',
-    skillLevel: 'intermediate',
-    photoURL: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=60'
-  },
-  {
-    id: 'demo-5',
-    fullName: 'ফয়সাল মাহমুদ (Faisal)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Tigers',
-    specialSkill: 'সলিড টপ-অর্ডার ব্যাটসম্যান (Solid Top-Order Batsman)',
-    skillLevel: 'intermediate',
-    photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=60'
-  },
-  {
-    id: 'demo-6',
-    fullName: 'আশিকুর রহমান (Ashik)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Warriors',
-    specialSkill: 'মিডফিল্ড প্লেমেকার (Midfield Playmaker)',
-    skillLevel: 'intermediate',
-    photoURL: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&auto=format&fit=crop&q=60'
-  },
-  // Beginner Players
-  {
-    id: 'demo-7',
-    fullName: 'হীরা তালুকদার (Hira)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Tigers',
-    specialSkill: 'অ্যাথলেটিক উইকেটকিপার (Wicketkeeper-Batsman)',
-    skillLevel: 'beginner',
-    photoURL: 'https://images.unsplash.com/photo-1520341280432-4749d4d7bcf9?w=400&auto=format&fit=crop&q=60'
-  },
-  {
-    id: 'demo-8',
-    fullName: 'অপূর্ব রায় (Apurbo)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Ninjas',
-    specialSkill: 'শার্প রিফ্লেক্স গোলকিপার (Reflex Goalkeeper)',
-    skillLevel: 'beginner',
-    photoURL: 'https://images.unsplash.com/photo-1489980508314-941910ded1f4?w=400&auto=format&fit=crop&q=60'
-  },
-  {
-    id: 'demo-9',
-    fullName: 'ইমাম হোসাইন (Emam)',
-    facebookURL: 'https://facebook.com',
-    teamName: 'Improvement Warriors',
-    specialSkill: 'ডিফেন্ডার উইঙ্গার (Agile Wingback)',
-    skillLevel: 'beginner',
-    photoURL: 'https://images.unsplash.com/photo-1500048993953-d23a436266cf?w=400&auto=format&fit=crop&q=60'
-  }
-];
 
 export default function SportingPlayers() {
   const { language } = useLanguage();
@@ -175,7 +85,9 @@ export default function SportingPlayers() {
           specialSkill: data.specialSkill || data.preferredSport || 'Sporting Member',
           skillLevel: level,
           photoURL: data.photoURL || 'https://images.unsplash.com/photo-1431324155629-1a6edd1dec8d?w=400&auto=format&fit=crop&q=60',
-          preferredSport: data.preferredSport || ''
+          preferredSport: data.preferredSport || '',
+          totalRuns: typeof data.totalRuns === 'number' ? data.totalRuns : (Number(data.totalRuns) || 0),
+          totalWickets: typeof data.totalWickets === 'number' ? data.totalWickets : (Number(data.totalWickets) || 0)
         } as Player;
       });
       setDbPlayers(playersList);
@@ -184,10 +96,8 @@ export default function SportingPlayers() {
     return () => unsubscribe();
   }, []);
 
-  // Merge database players with mock players to ensure a rich list is shown
-  const allPlayers = [...dbPlayers, ...DEMO_PLAYERS.filter(demo => 
-    !dbPlayers.some(dbP => dbP.fullName.toLowerCase() === demo.fullName.toLowerCase())
-  )];
+  // Use only db players since demo data is removed
+  const allPlayers = dbPlayers;
 
   // Filter with search and selected sport
   const filteredPlayers = allPlayers.filter(p => {
@@ -480,7 +390,7 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
   const { language } = useLanguage();
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden border border-slate-150/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group h-[380px] md:h-[400px]">
+    <div className="bg-white rounded-3xl overflow-hidden border border-slate-150/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group h-auto pb-4">
       {/* Player Photo (Medium Size, Top Half) */}
       <div className="relative aspect-[4/5] bg-slate-100 overflow-hidden shrink-0">
         <img
@@ -506,7 +416,7 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
       </div>
 
       {/* Info Body */}
-      <div className="p-4 flex-grow flex flex-col justify-between">
+      <div className="p-4 flex-grow flex flex-col justify-between space-y-3">
         <div className="space-y-1.5">
           {/* Team Name badge */}
           <p className="text-[10px] font-black tracking-widest text-emerald-600 uppercase font-mono">
@@ -522,6 +432,18 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
           <p className="text-xs text-slate-500 font-medium leading-snug line-clamp-2">
             <span className="font-bold text-slate-700">Skill:</span> {player.specialSkill}
           </p>
+
+          {/* Runs and Wickets Statistics Section */}
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+            <div className="bg-slate-50/80 rounded-xl p-1.5 border border-slate-100 text-center">
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Runs (রান)</p>
+              <p className="text-xs font-black text-slate-800">{player.totalRuns !== undefined ? player.totalRuns : 0}</p>
+            </div>
+            <div className="bg-slate-50/80 rounded-xl p-1.5 border border-slate-100 text-center">
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Wickets (উইকেট)</p>
+              <p className="text-xs font-black text-slate-800">{player.totalWickets !== undefined ? player.totalWickets : 0}</p>
+            </div>
+          </div>
         </div>
 
         {/* Facebook Link Button */}
@@ -541,4 +463,4 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
       </div>
     </div>
   );
-}
+};
