@@ -59,12 +59,16 @@ export default function SportingClub() {
   useEffect(() => {
     const q = query(
       collection(db, 'members'),
-      where('platform', 'array-contains', 'sporting-club'),
-      where('status', '==', 'approved'),
-      where('isInCommittee', '==', true)
+      where('platform', 'array-contains', 'sporting-club')
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setCommittee(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const committeeList = snapshot.docs
+        .filter(doc => {
+          const data = doc.data();
+          return data.status === 'approved' && data.isInCommittee === true;
+        })
+        .map(doc => ({ id: doc.id, ...doc.data() }));
+      setCommittee(committeeList);
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, 'members');
     });

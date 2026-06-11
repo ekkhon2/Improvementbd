@@ -14,7 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 export default function SportsAdmin() {
   const [banners, setBanners] = useState<any[]>([]);
-  const [members, setMembers] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCommitteeDialogOpen, setIsCommitteeDialogOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<any>(null);
@@ -48,6 +47,7 @@ export default function SportsAdmin() {
 
   // Dynamic Players and Teams States
   const [allSportsMembers, setAllSportsMembers] = useState<any[]>([]);
+  const members = allSportsMembers.filter(m => m.status === 'approved');
   const [sportsTeams, setSportsTeams] = useState<any[]>([]);
   
   // Players tab UI/Control states
@@ -87,20 +87,6 @@ export default function SportsAdmin() {
       setBanners(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, 'sports_banners');
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const q = query(
-      collection(db, 'members'), 
-      where('platform', 'array-contains', 'sporting-club'),
-      where('status', '==', 'approved')
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMembers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'members');
     });
     return () => unsubscribe();
   }, []);

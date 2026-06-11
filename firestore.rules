@@ -50,9 +50,9 @@ service cloud.firestore {
     // ===============================================================
 
     match /members/{memberId} {
-      // Public can apply, but only with pending status and validated data
-      allow create: if isValidMember(request.resource.data) && 
-                      request.resource.data.status == 'pending';
+      // Public can apply with pending status, while admin can create directly
+      allow create: if isAdmin() || (isValidMember(request.resource.data) && 
+                      request.resource.data.status == 'pending');
       
       // Prevent PII leak. Admins can read everything; public can only read approved profiles.
       allow read: if isAdmin() || (resource != null && 'status' in resource.data && resource.data.status == 'approved');

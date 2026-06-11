@@ -66,30 +66,31 @@ export default function SportingPlayers() {
   useEffect(() => {
     const q = query(
       collection(db, 'members'),
-      where('platform', 'array-contains', 'sporting-club'),
-      where('status', '==', 'approved')
+      where('platform', 'array-contains', 'sporting-club')
     );
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const playersList = snapshot.docs.map(doc => {
-        const data = doc.data();
-        let level: 'pro' | 'intermediate' | 'beginner' = 'beginner';
-        if (data.skillLevel === 'pro') level = 'pro';
-        else if (data.skillLevel === 'intermediate') level = 'intermediate';
-        
-        return {
-          id: doc.id,
-          fullName: data.fullName,
-          facebookURL: data.facebookURL || '',
-          teamName: data.teamName || 'Improvement Club',
-          specialSkill: data.specialSkill || data.preferredSport || 'Sporting Member',
-          skillLevel: level,
-          photoURL: data.photoURL || 'https://images.unsplash.com/photo-1431324155629-1a6edd1dec8d?w=400&auto=format&fit=crop&q=60',
-          preferredSport: data.preferredSport || '',
-          totalRuns: typeof data.totalRuns === 'number' ? data.totalRuns : (Number(data.totalRuns) || 0),
-          totalWickets: typeof data.totalWickets === 'number' ? data.totalWickets : (Number(data.totalWickets) || 0)
-        } as Player;
-      });
+      const playersList = snapshot.docs
+        .filter(doc => doc.data().status === 'approved')
+        .map(doc => {
+          const data = doc.data();
+          let level: 'pro' | 'intermediate' | 'beginner' = 'beginner';
+          if (data.skillLevel === 'pro') level = 'pro';
+          else if (data.skillLevel === 'intermediate') level = 'intermediate';
+          
+          return {
+            id: doc.id,
+            fullName: data.fullName,
+            facebookURL: data.facebookURL || '',
+            teamName: data.teamName || 'Improvement Club',
+            specialSkill: data.specialSkill || data.preferredSport || 'Sporting Member',
+            skillLevel: level,
+            photoURL: data.photoURL || 'https://images.unsplash.com/photo-1431324155629-1a6edd1dec8d?w=400&auto=format&fit=crop&q=60',
+            preferredSport: data.preferredSport || '',
+            totalRuns: typeof data.totalRuns === 'number' ? data.totalRuns : (Number(data.totalRuns) || 0),
+            totalWickets: typeof data.totalWickets === 'number' ? data.totalWickets : (Number(data.totalWickets) || 0)
+          } as Player;
+        });
       setDbPlayers(playersList);
     });
 
