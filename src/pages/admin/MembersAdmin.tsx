@@ -23,6 +23,7 @@ export default function MembersAdmin() {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<any>(null);
+  const [successData, setSuccessData] = useState<{ isOpen: boolean; memberName: string; membershipId: string } | null>(null);
   const [newMember, setNewMember] = useState({
     fullName: '',
     phonePrimary: '',
@@ -50,13 +51,15 @@ export default function MembersAdmin() {
     volunteerInterest: '',
     area: '',
     platform: platformId ? [platformId] : ['foundation'],
-    status: 'approved'
+    status: 'approved',
+    foundationArea: '',
+    position: ''
   });
 
   useEffect(() => {
     if (platformId) {
       setFilterPlatform(platformId);
-      setNewMember(prev => ({ ...prev, platform: platformId }));
+      setNewMember(prev => ({ ...prev, platform: [platformId] }));
     }
   }, [platformId]);
 
@@ -114,12 +117,21 @@ export default function MembersAdmin() {
         });
       }
 
-      await updateDoc(doc(db, 'stats', 'totals'), {
-        members: increment(1),
-        donors: newMember.platform.includes('blood-bank') ? increment(1) : increment(0)
-      });
+      try {
+        await updateDoc(doc(db, 'stats', 'totals'), {
+          members: increment(1),
+          donors: newMember.platform.includes('blood-bank') ? increment(1) : increment(0)
+        });
+      } catch (statsErr) {
+        console.warn('Could not update stats totals due to lack of permissions:', statsErr);
+      }
 
       setIsAddDialogOpen(false);
+      setSuccessData({
+        isOpen: true,
+        memberName: newMember.fullName,
+        membershipId: finalMembershipId
+      });
       setNewMember({
         fullName: '',
         phonePrimary: '',
@@ -147,7 +159,9 @@ export default function MembersAdmin() {
         volunteerInterest: '',
         area: '',
         platform: platformId ? [platformId] : ['foundation'],
-        status: 'approved'
+        status: 'approved',
+        foundationArea: '',
+        position: ''
       });
     } catch (error) {
       console.error("Error adding member:", error);
@@ -1015,6 +1029,38 @@ export default function MembersAdmin() {
                 )}
               </form>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Custom Member Add Success Popup Dialog */}
+      <Dialog open={!!successData?.isOpen} onOpenChange={(open) => !open && setSuccessData(null)}>
+        <DialogContent className="max-w-md p-6 dialog-solid text-center">
+          <div className="flex flex-col items-center py-6 space-y-4">
+            {/* Animated SVG Check Circle */}
+            <div className="h-16 w-16 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-2">
+              <svg className="h-10 w-10 text-emerald-500 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            
+            <h3 className="text-2xl font-bold text-slate-900">সদস্য সফলভাবে যুক্ত করা হয়েছে!</h3>
+            <p className="text-emerald-600 font-semibold text-sm -mt-2">Member Added Successfully!</p>
+            <p className="text-slate-500 text-sm">
+               নতুন সদস্য <span className="font-semibold text-slate-800">{successData?.memberName}</span> সফলভাবে ডাটাবেজে যুক্ত হয়েছে।
+            </p>
+            
+            <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 w-full my-2">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-1">Generated Membership ID</span>
+              <span className="text-xl font-mono font-bold text-primary select-all block">{successData?.membershipId}</span>
+            </div>
+
+            <Button 
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg mt-4" 
+              onClick={() => setSuccessData(null)}
+            >
+              ঠিক আছে (Close)
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
